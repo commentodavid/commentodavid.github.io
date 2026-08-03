@@ -1,0 +1,515 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OCI 기상안전</title>
+<meta name="description" content="현재 위치와 검색 지역의 기상 위험, 6시간 예보 및 공식 기상특보를 확인합니다.">
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--soft:#f7f9fc;--line:#e2e7ee;--text:#151b23;--muted:#697581;--blue:#2765e8;--blue-soft:#edf3ff;--green:#13805b;--green-soft:#eaf8f2;--amber:#b56a09;--amber-soft:#fff4e2;--red:#cf3f4d;--red-soft:#fff0f2;--purple:#6b55c8;--purple-soft:#f2efff;--shadow:0 14px 42px rgba(24,34,44,.07);--radius:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Malgun Gothic",Arial,sans-serif;letter-spacing:-.018em}button,input,select{font:inherit}button{border:0}.topbar{position:sticky;top:0;z-index:30;background:rgba(243,245,248,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(226,231,238,.92)}.top-inner{max-width:1480px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(145deg,#245edf,#75adff);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 8px 20px rgba(39,101,232,.22)}.brand strong{font-size:19px}.system{display:flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:13px;box-shadow:0 4px 12px rgba(24,34,44,.04)}.system i{width:9px;height:9px;border-radius:50%;background:#d59a2d}.system.ready i{background:var(--green)}.system.limited i{background:var(--amber)}.system.blocked i{background:var(--red)}
+.page{max-width:1480px;margin:auto;padding:24px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.status-card{padding:30px;min-height:290px;margin-bottom:16px;position:relative;overflow:hidden;transition:.2s}.status-card:after{content:"";position:absolute;width:390px;height:390px;right:-120px;bottom:-235px;border-radius:50%;background:radial-gradient(circle,rgba(39,101,232,.16),transparent 69%)}.status-card[data-state="warning"]{border-color:#eecb91;background:linear-gradient(135deg,#fff,#fffaf1)}.status-card[data-state="danger"]{border-color:#efb3ba;background:linear-gradient(135deg,#fff,#fff5f6)}.status-card[data-state="delayed"]{border-color:#e8c47f;background:linear-gradient(135deg,#fff,#fffaf0)}.status-main{position:relative;z-index:1;max-width:1120px}.eyebrow{font-size:14px;font-weight:820;color:var(--muted);margin-bottom:9px}.status-title{font-size:42px;line-height:1.08;margin:0 0 12px;letter-spacing:-.052em}.location-line{font-size:19px;font-weight:790;margin-bottom:12px}.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px}.meta-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:720;background:#fff;color:#44505b}.meta-chip.blue{background:var(--blue-soft);border-color:#d4e2ff;color:#2456ad}.meta-chip.green{background:var(--green-soft);border-color:#cceee0;color:var(--green)}.meta-chip.amber{background:var(--amber-soft);border-color:#f1d5a2;color:var(--amber)}.meta-chip.red{background:var(--red-soft);border-color:#efc1c6;color:var(--red)}.basis{display:flex;flex-wrap:wrap;gap:8px}.basis span{font-size:14px;line-height:1.4;padding:8px 11px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:#44505b}.safety-box{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:17px;background:rgba(255,255,255,.76)}.safety-box h3{font-size:16px;margin:0 0 11px}.safety-list{display:grid;gap:8px}.safety-item{display:flex;gap:9px;align-items:flex-start;color:#3d4852;font-size:14px;line-height:1.55}.safety-item b{width:21px;height:21px;flex:0 0 auto;border-radius:7px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-size:11px}.legal{margin-top:13px;border-top:1px solid var(--line);padding-top:14px}.legal h4{margin:0;font-size:14px;font-weight:850;color:#35414c}.legal ul{margin:10px 0 0;padding-left:19px;color:#56626d;font-size:13px;line-height:1.72}.legal li+li{margin-top:5px}
+.layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}.sidebar,.main{display:flex;flex-direction:column;gap:16px}.panel{padding:22px}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}.head h2{font-size:20px;margin:0}.head p{font-size:13px;color:var(--muted);margin:5px 0 0;line-height:1.5}.badge{font-size:12px;padding:6px 10px;border:1px solid var(--line);background:var(--soft);border-radius:999px;color:var(--muted);white-space:nowrap}.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:760;color:#4d5862;margin-bottom:8px}.input-row{display:flex;gap:8px}.input-row input{flex:1;min-width:0}input,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--text);outline:none}input:focus,select:focus{border-color:#8eb6fa;box-shadow:0 0 0 4px rgba(39,101,232,.08)}input[type=number]{text-align:right;-moz-appearance:textfield;appearance:textfield}input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.btn{cursor:pointer;padding:12px 14px;border-radius:13px;font-weight:780;background:#eef1f4;color:#34404a;transition:.16s}.btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--blue);color:#fff}.btn.soft{background:var(--blue-soft);color:var(--blue)}.btn.outline{background:#fff;border:1px solid var(--line)}.btn.dark{background:#17202a;color:#fff}.btn.small{padding:8px 10px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}.location-now{padding:13px;border-radius:14px;background:var(--blue-soft);color:#2456a7;font-size:13px;line-height:1.55;margin-bottom:12px}.results{display:flex;flex-direction:column;gap:7px;margin-top:9px}.result{border:1px solid var(--line);background:var(--soft);border-radius:13px;padding:12px;text-align:left;cursor:pointer;color:var(--text);line-height:1.45}.result:hover{border-color:#9dbcf0;background:var(--blue-soft)}.result small{display:block;color:var(--muted);margin-top:4px}.recent-head{display:flex;align-items:center;justify-content:space-between;margin:16px 0 9px}.recent-head strong{font-size:13px}.recent{display:flex;flex-direction:column;gap:7px}.recent button{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:11px 12px;cursor:pointer;color:#313b44}.recent button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recent button small{color:var(--muted);flex:0 0 auto}.empty{padding:15px;text-align:center;border:1px dashed #cfd6dd;background:var(--soft);border-radius:13px;color:var(--muted);font-size:13px}
+.alarm-intro{padding:14px;border-radius:15px;background:linear-gradient(135deg,#f7f9ff,#f3f6fb);border:1px solid #e0e7f4;margin-bottom:12px}.alarm-intro strong{display:block;font-size:15px}.alarm-intro span{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:5px}.rule-card{border:1px solid var(--line);border-radius:17px;background:#fff;margin-bottom:10px;overflow:hidden}.rule-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px}.rule-title{display:flex;align-items:center;gap:10px}.rule-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;background:var(--blue-soft)}.rule-title strong{font-size:15px}.rule-title span{display:block;color:var(--muted);font-size:11px;margin-top:3px}.rule-body{padding:0 14px 14px}.rule-options{padding:12px;border-radius:14px;background:var(--soft);display:flex;flex-direction:column;gap:10px}.option-row{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:10px;align-items:center}.check-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#44505b}.check-label input{width:18px;height:18px;margin:0;accent-color:var(--blue)}.unit-input{position:relative}.unit-input input{padding-right:34px}.unit-input span{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}.check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.check-chip{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 7px;font-size:12px;color:#45515c}.check-chip input{width:16px;height:16px;margin:0;accent-color:var(--blue)}.switch{position:relative;width:48px;height:28px;flex:0 0 auto}.switch input{display:none}.slider{position:absolute;inset:0;background:#d5dae0;border-radius:99px;cursor:pointer;transition:.18s}.slider:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;box-shadow:0 2px 7px rgba(0,0,0,.18);transition:.18s}.switch input:checked+.slider{background:var(--blue)}.switch input:checked+.slider:after{transform:translateX(20px)}.chart-setting{margin-top:12px;padding:13px;border:1px dashed #cfd8e5;border-radius:14px;background:#fafcff}.chart-setting strong{font-size:13px}.chart-setting p{font-size:11px;color:var(--muted);line-height:1.5;margin:4px 0 10px}.alarm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.weather-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.metric{padding:23px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fafbfc);min-height:155px}.metric small{font-size:15px;color:var(--muted);font-weight:680}.metric strong{display:block;font-size:46px;line-height:1;margin:20px 0 13px;letter-spacing:-.055em}.metric .sub{font-size:14px;color:var(--muted);line-height:1.45}.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.chart-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--soft);min-width:0}.chart-title{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}.chart-title strong{font-size:16px}.chart-title span{font-size:12px;color:var(--muted)}.chart-card svg{width:100%;height:220px;display:block;overflow:visible}.forecast-note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:11px}.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:12px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}.legend .normal{background:var(--blue)}.legend .danger{background:var(--red)}.weekly-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.weekly-card{padding:16px;border-radius:17px;border:1px solid var(--line);background:var(--soft)}.weekly-card strong{font-size:14px}.weekly-card span{display:block;color:var(--muted);font-size:13px;line-height:1.55;margin-top:6px}.weekly-card.official{background:var(--purple-soft);border-color:#dcd4ff}.weekly-card.danger{background:var(--red-soft);border-color:#f0c2c7}.warnings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.warning{padding:16px;border-radius:16px;border:1px solid #e0d8ff;background:var(--purple-soft)}.warning.warning-level{border-color:#efbdc3;background:var(--red-soft)}.warning.advisory-level{border-color:#efd6a4;background:var(--amber-soft)}.warning strong{font-size:15px}.warning span{display:block;color:var(--muted);font-size:13px;margin-top:7px;line-height:1.5}.service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.service-item{padding:11px;border-radius:12px;background:var(--soft);border:1px solid var(--line)}.service-item strong{font-size:12px}.service-item span{display:block;font-size:11px;color:var(--muted);margin-top:4px}.service-item.ok{background:var(--green-soft);border-color:#cce9dc}.service-item.warn{background:var(--amber-soft);border-color:#eed19c}.service-item.fail{background:var(--red-soft);border-color:#efc1c6}
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,26,32,.35);backdrop-filter:blur(8px)}.modal.show{display:flex}.modal-box{width:min(620px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.18);padding:25px}.modal-box h2{font-size:25px;margin:0 0 10px}.modal-box p{color:var(--muted);line-height:1.6;margin:0 0 17px}.alarm-banner{padding:18px;border-radius:17px;background:var(--red-soft);border:1px solid #efbdc3}.alarm-banner strong{display:block;font-size:20px;color:var(--red)}.alarm-banner span{display:block;font-size:14px;color:#5d4549;margin-top:8px;line-height:1.55}.alarm-guide{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#f8fafc}.alarm-guide h3,.alarm-legal h3{font-size:15px;margin:0 0 10px}.alarm-guide .safety-list{gap:9px}.alarm-legal{margin-top:12px;padding:16px;border:1px solid #e2d9ff;border-radius:16px;background:var(--purple-soft)}.alarm-legal ul{margin:0;padding-left:19px;color:#4f4a62;font-size:13px;line-height:1.7}.alarm-legal li+li{margin-top:5px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.diag-list{display:flex;flex-direction:column;gap:8px}.diag{display:grid;grid-template-columns:9px 1fr;gap:9px;padding:10px;border-radius:12px;background:var(--soft)}.diag i{width:8px;height:8px;border-radius:50%;margin-top:5px;background:#d99a2b}.diag.fail{background:var(--red-soft)}.diag.fail i{background:var(--red)}.diag strong{font-size:13px}.diag span{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:3px;word-break:break-word}.toast{position:fixed;left:50%;bottom:26px;z-index:90;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#1b242d;color:#fff;padding:12px 16px;border-radius:13px;font-size:13px;box-shadow:0 16px 40px rgba(0,0,0,.2);transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1120px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.sidebar>.card:last-child{grid-column:1/-1}}@media(max-width:780px){.page{padding:14px}.top-inner{padding:13px 15px}.status-card{padding:23px}.status-title{font-size:34px}.sidebar{display:flex}.weather-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-grid,.weekly-grid,.warnings{grid-template-columns:1fr}.metric strong{font-size:39px}}@media(max-width:450px){.weather-grid{grid-template-columns:1fr}.status-title{font-size:31px}.alarm-actions{grid-template-columns:1fr}.check-grid{grid-template-columns:1fr}.option-row{grid-template-columns:1fr 95px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="top-inner"><div class="brand"><div class="logo">W</div><strong>OCI 기상안전</strong></div><div id="system" class="system"><i></i><span id="systemText">연결 확인 중</span></div></div></header>
+<main class="page">
+<section id="statusCard" class="card status-card" data-state="normal"><div class="status-main"><div class="eyebrow">현재 상태</div><h1 id="statusTitle" class="status-title">위치를 확인하고 있습니다</h1><div id="currentAddress" class="location-line">현재 위치 확인 중</div><div id="metaRow" class="meta-row"><span class="meta-chip blue">기상 정보를 불러오는 중입니다</span></div><div id="statusBasis" class="basis"><span>판단 근거를 계산하고 있습니다.</span></div><div class="safety-box"><h3>안전 조치 사항</h3><div id="safetyActions" class="safety-list"><div class="safety-item"><b>1</b><span>날씨 조회 후 표시됩니다.</span></div></div><div class="legal"><h4>법적·행정 기준</h4><ul id="legalBasis"></ul></div></div></div></section>
+<div class="layout"><aside class="sidebar">
+<section class="card panel"><div class="head"><div><h2>위치</h2><p>현재 위치 또는 검색한 지역의 기상정보를 표시합니다.</p></div><span id="gridBadge" class="badge">—</span></div><div id="selectedLocation" class="location-now">위치를 설정하고 있습니다.</div><div class="field"><label for="address">지역 검색</label><div class="input-row"><input id="address" placeholder="예: 군산시, 수원시"><button type="button" id="searchAddress" class="btn soft">검색</button></div><div id="addressResults" class="results"></div></div><button type="button" id="useLocation" class="btn primary" style="width:100%">현재 위치 사용</button><div class="recent-head"><strong>최근 선택 위치</strong><button type="button" id="clearRecent" class="btn small outline">전체 삭제</button></div><div id="recentLocations" class="recent"><div class="empty">최근 위치가 없습니다.</div></div></section>
+<section class="card panel"><div class="head"><div><h2>알람 설정</h2><p>설정값 이상이면 화면 알람을 한 번 표시하고, 기준 미만으로 내려간 뒤 다시 초과할 때 재알림합니다.</p></div></div><div class="alarm-intro"><strong>알람은 무음 팝업으로 표시됩니다</strong><span>사용자 기준은 ‘기준 초과 여부’만 판단하며 공식 특보 단계와 분리합니다.</span></div>
+<div class="rule-card"><div class="rule-top"><div class="rule-title"><div class="rule-icon">☀</div><div><strong>폭염</strong><span>기온·체감온도 중복 선택 가능</span></div></div><label class="switch"><input id="heatEnabled" type="checkbox"><span class="slider"></span></label></div><div class="rule-body"><div class="rule-options"><div class="option-row"><label class="check-label"><input id="heatTempEnabled" type="checkbox">기온</label><div class="unit-input"><input id="heatTempThreshold" type="number" step="0.1"><span>℃</span></div></div><div class="option-row"><label class="check-label"><input id="heatAppEnabled" type="checkbox">체감온도</label><div class="unit-input"><input id="heatAppThreshold" type="number" step="0.1"><span>℃</span></div></div></div></div></div>
+<div class="rule-card"><div class="rule-top"><div class="rule-title"><div class="rule-icon">!</div><div><strong>기상특보</strong><span>기상청 공식 단계 적용</span></div></div><label class="switch"><input id="warningEnabled" type="checkbox"><span class="slider"></span></label></div><div class="rule-body"><div class="rule-options"><div class="check-grid"><label class="check-chip"><input id="warningHeat" type="checkbox">폭염</label><label class="check-chip"><input id="warningRain" type="checkbox">호우</label><label class="check-chip"><input id="warningTyphoon" type="checkbox">태풍</label></div></div></div></div>
+<div class="chart-setting"><strong>습도 차트 표시 기준</strong><p>습도 단독에는 일반적인 법정 경보 기준이 없어, 차트 색상만 사용자가 정한 값으로 표시합니다. 알람은 발생하지 않습니다.</p><div class="unit-input"><input id="humidityChartThreshold" type="number" step="1"><span>%</span></div></div>
+<div class="field" style="margin-top:13px"><label for="interval">자동 갱신 주기</label><div class="unit-input"><input id="interval" type="number" min="1" max="60" step="1"><span>분</span></div></div><div class="alarm-actions"><button type="button" id="saveSettings" class="btn primary">설정 적용</button><button type="button" id="testAlarm" class="btn dark">알람 테스트</button></div></section>
+<section id="diagnosticPanel" class="card panel"><div class="head"><div><h2>연결 상태</h2><p>실제 조회 상태를 항목별로 표시합니다.</p></div><button type="button" id="rerunHealth" class="btn small outline">다시 확인</button></div><div id="serviceGrid" class="service-grid"></div><div id="healthList" class="diag-list" style="margin-top:10px"></div></section>
+</aside><div class="main">
+<section class="card panel"><div class="head"><div><h2>현재 날씨</h2><p>가장 최근에 받은 관측값입니다.</p></div></div><div class="weather-grid"><div class="metric"><small>기온</small><strong><span id="temperature">—</span>℃</strong><div class="sub" id="temperatureSub">관측 대기</div></div><div class="metric"><small>체감온도</small><strong><span id="apparent">—</span>℃</strong><div class="sub">기상청·KOSHA 여름철 산식</div></div><div class="metric"><small>습도</small><strong><span id="humidity">—</span>%</strong><div class="sub" id="humiditySub">관측 대기</div></div><div class="metric"><small>1시간 강수량</small><strong><span id="rain">—</span>mm</strong><div class="sub" id="pty">강수형태 —</div></div><div class="metric"><small>풍속</small><strong><span id="wind">—</span>m/s</strong><div class="sub" id="windDir">풍향 —</div></div><div class="metric"><small>하늘 상태</small><strong id="sky" style="font-size:34px">—</strong><div class="sub">가장 가까운 예보 시각</div></div></div></section>
+<section class="card panel"><div class="head"><div><h2>6시간 예보</h2><p>각 차트는 자기 항목의 기준만 사용합니다. 다른 항목이나 특보 때문에 색이 바뀌지 않습니다.</p></div></div><div id="forecastCharts" class="chart-grid"><div class="empty" style="grid-column:1/-1">예보를 불러오고 있습니다.</div></div><div class="legend"><span><i class="normal"></i>기준 미만</span><span><i class="danger"></i>해당 항목 기준 초과</span></div><div id="forecastNote" class="forecast-note"></div></section>
+<section class="card panel"><div class="head"><div><h2>이번 주 특이사항</h2><p>현재 위치의 폭염 예상과 공식 기상특보만 날짜별로 묶어 표시합니다.</p></div></div><div id="weeklyHighlights" class="weekly-grid"><div class="empty" style="grid-column:1/-1">주간 정보를 불러오고 있습니다.</div></div><div id="weeklyNote" class="forecast-note"></div></section>
+<section class="card panel"><div class="head"><div><h2>기상특보</h2><p>현재 위치와 일치하는 폭염·호우·태풍 특보를 예비특보·주의보·경보·폭염중대경보로 구분합니다.</p></div><span id="warningCount" class="badge">0건</span></div><div id="warnings" class="warnings"><div class="empty" style="grid-column:1/-1">현재 일치하는 특보가 없습니다.</div></div></section>
+</div></div></main>
+<footer class="data-credit">주소 검색 데이터 © OpenStreetMap contributors</footer>
+<div id="startupModal" class="modal"><div class="modal-box"><h2>시작 점검</h2><p id="startupText">프로그램 실행 환경을 확인하고 있습니다.</p><div id="startupChecks" class="diag-list"></div><div class="modal-actions"><button type="button" id="closeStartup" class="btn primary" style="display:none">닫기</button></div></div></div>
+<div id="alarmModal" class="modal"><div class="modal-box"><h2 id="alarmTitle">기상 위험 알람</h2><p id="alarmLocation"></p><div class="alarm-banner"><strong id="alarmMetric"></strong><span id="alarmReason"></span></div><div class="alarm-guide"><h3>즉시 조치 가이드</h3><div id="alarmActions" class="safety-list"></div></div><div class="alarm-legal"><h3>법적·행정 근거</h3><ul id="alarmLegalBasis"></ul></div><div class="modal-actions"><button type="button" id="closeAlarm" class="btn primary">확인</button></div></div></div>
+<div id="toast" class="toast"></div>
+<script>
+/* node:coverage disable */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.SafetyCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+/* node:coverage enable */
+  'use strict';
+
+  const DEFAULT_SETTINGS = Object.freeze({
+    heatEnabled: true,
+    heatTempEnabled: true,
+    heatTempThreshold: 33,
+    heatAppEnabled: true,
+    heatAppThreshold: 33,
+    rainEnabled: true,
+    rainThreshold: 15,
+    windEnabled: true,
+    windThreshold: 14,
+    humidityChartThreshold: 85,
+    warningEnabled: true,
+    warningHeat: true,
+    warningRain: true,
+    warningTyphoon: true,
+    interval: 5
+  });
+
+  const METRICS = Object.freeze({
+    temperature: { key: 'temperatureC', label: '온도', unit: '℃' },
+    humidity: { key: 'humidityPct', label: '습도', unit: '%' },
+    wind: { key: 'windSpeedMs', label: '풍속', unit: 'm/s' },
+    rain: { key: 'rain1hMm', label: '강수량', unit: 'mm' }
+  });
+
+  function asBool(value, fallback) {
+    return typeof value === 'boolean' ? value : fallback;
+  }
+
+  function boundedNumber(value, fallback, min, max) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function normalizeSettings(raw) {
+    const r = raw && typeof raw === 'object' ? raw : {};
+    return {
+      heatEnabled: asBool(r.heatEnabled, DEFAULT_SETTINGS.heatEnabled),
+      heatTempEnabled: asBool(r.heatTempEnabled, DEFAULT_SETTINGS.heatTempEnabled),
+      heatTempThreshold: boundedNumber(r.heatTempThreshold, DEFAULT_SETTINGS.heatTempThreshold, -50, 60),
+      heatAppEnabled: asBool(r.heatAppEnabled, DEFAULT_SETTINGS.heatAppEnabled),
+      heatAppThreshold: boundedNumber(r.heatAppThreshold, DEFAULT_SETTINGS.heatAppThreshold, -50, 70),
+      rainEnabled: asBool(r.rainEnabled, DEFAULT_SETTINGS.rainEnabled),
+      rainThreshold: boundedNumber(r.rainThreshold, DEFAULT_SETTINGS.rainThreshold, 0, 200),
+      windEnabled: asBool(r.windEnabled, DEFAULT_SETTINGS.windEnabled),
+      windThreshold: boundedNumber(r.windThreshold, DEFAULT_SETTINGS.windThreshold, 0, 80),
+      humidityChartThreshold: boundedNumber(r.humidityChartThreshold, DEFAULT_SETTINGS.humidityChartThreshold, 0, 100),
+      warningEnabled: asBool(r.warningEnabled, DEFAULT_SETTINGS.warningEnabled),
+      warningHeat: asBool(r.warningHeat, DEFAULT_SETTINGS.warningHeat),
+      warningRain: asBool(r.warningRain, DEFAULT_SETTINGS.warningRain),
+      warningTyphoon: asBool(r.warningTyphoon, DEFAULT_SETTINGS.warningTyphoon),
+      interval: Math.round(boundedNumber(r.interval, DEFAULT_SETTINGS.interval, 1, 60))
+    };
+  }
+
+  // 기상청 여름철 체감온도: Stull 습구온도 추정식 + 기상청 산식.
+  function apparentTemperature(temperatureC, humidityPct) {
+    const ta = Number(temperatureC);
+    let rh = Number(humidityPct);
+    if (!Number.isFinite(ta) || !Number.isFinite(rh)) return null;
+    rh = Math.min(100, Math.max(0, rh));
+    const tw = ta * Math.atan(0.151977 * Math.sqrt(rh + 8.313659))
+      + Math.atan(ta + rh)
+      - Math.atan(rh - 1.67633)
+      + 0.00391838 * Math.pow(rh, 1.5) * Math.atan(0.023101 * rh)
+      - 4.686035;
+    const at = -0.2442 + 0.55399 * tw + 0.45535 * ta - 0.0022 * tw * tw + 0.00278 * tw * ta + 3.0;
+    return Math.round(at * 10) / 10;
+  }
+
+  function isExceeded(value, threshold, enabled) {
+    const v = Number(value);
+    const t = Number(threshold);
+    return Boolean(enabled && Number.isFinite(v) && Number.isFinite(t) && v >= t);
+  }
+
+  function userThresholdEvents(point, settingsInput, scope) {
+    const settings = normalizeSettings(settingsInput);
+    const p = point || {};
+    const events = [];
+    const apparent = apparentTemperature(p.temperatureC, p.humidityPct);
+    const at = scope === 'forecast' ? String(p.forecastAt || '') : '';
+    if (isExceeded(p.temperatureC, settings.heatTempThreshold, settings.heatEnabled && settings.heatTempEnabled)) {
+      events.push({ id: 'temperature', type: '폭염', criterion: '기온', value: Number(p.temperatureC), threshold: settings.heatTempThreshold, unit: '℃', scope, forecastAt: at, label: '기온 기준 초과' });
+    }
+    if (isExceeded(apparent, settings.heatAppThreshold, settings.heatEnabled && settings.heatAppEnabled)) {
+      events.push({ id: 'apparent', type: '폭염', criterion: '체감온도', value: apparent, threshold: settings.heatAppThreshold, unit: '℃', scope, forecastAt: at, label: '체감온도 기준 초과' });
+    }
+    if (isExceeded(p.rain1hMm, settings.rainThreshold, settings.rainEnabled)) {
+      events.push({ id: 'rain', type: '강수', criterion: '1시간 강수량', value: Number(p.rain1hMm), threshold: settings.rainThreshold, unit: 'mm', scope, forecastAt: at, label: '강수 기준 초과' });
+    }
+    if (isExceeded(p.windSpeedMs, settings.windThreshold, settings.windEnabled)) {
+      events.push({ id: 'wind', type: '풍속', criterion: '풍속', value: Number(p.windSpeedMs), threshold: settings.windThreshold, unit: 'm/s', scope, forecastAt: at, label: '풍속 기준 초과' });
+    }
+    return { events, apparent };
+  }
+
+  function chartMetricState(point, metric, settingsInput) {
+    const settings = normalizeSettings(settingsInput);
+    const config = METRICS[metric];
+    if (!config) throw new Error('지원하지 않는 차트 항목입니다.');
+    const p = point || {};
+    let enabled = true;
+    let threshold;
+    if (metric === 'temperature') {
+      enabled = settings.heatEnabled && settings.heatTempEnabled;
+      threshold = settings.heatTempThreshold;
+    } else if (metric === 'humidity') {
+      threshold = settings.humidityChartThreshold;
+    } else if (metric === 'wind') {
+      enabled = settings.windEnabled;
+      threshold = settings.windThreshold;
+    } else {
+      enabled = settings.rainEnabled;
+      threshold = settings.rainThreshold;
+    }
+    const value = Number(p[config.key]);
+    const exceeded = isExceeded(value, threshold, enabled);
+    return { metric, key: config.key, label: config.label, unit: config.unit, value: Number.isFinite(value) ? value : null, threshold, enabled, exceeded, color: exceeded ? 'danger' : 'normal' };
+  }
+
+  function chartSlots(points, metric, settingsInput) {
+    const rows = Array.isArray(points) ? points : [];
+    const count = rows.length;
+    return rows.map((point, index) => {
+      const state = chartMetricState(point, metric, settingsInput);
+      const start = count <= 1 ? 0 : (index === 0 ? 0 : (index - 0.5) / (count - 1));
+      const end = count <= 1 ? 1 : (index === count - 1 ? 1 : (index + 0.5) / (count - 1));
+      return { ...state, index, start, end, forecastAt: String(point.forecastAt || '') };
+    });
+  }
+
+  function warningLevel(code) {
+    const c = String(code == null ? '' : code).trim().toUpperCase();
+    if (c === '1' || c === 'P' || c === 'PRELIMINARY' || c === '예비특보') return { code: '1', label: '예비특보', rank: 1 };
+    if (c === '2' || c === 'A' || c === 'ADVISORY' || c === '주의보') return { code: '2', label: '주의보', rank: 2 };
+    if (c === '3' || c === 'W' || c === 'WARNING' || c === '경보') return { code: '3', label: '경보', rank: 3 };
+    if (c === '4' || c === 'M' || c === 'CRITICAL' || c === '중대경보') return { code: '4', label: '중대경보', rank: 4 };
+    return { code: c, label: '수준 미상', rank: 0 };
+  }
+
+  function warningCommand(code) {
+    const c = String(code == null ? '' : code).trim();
+    const map = { '1': '발표', '2': '대치', '3': '해제', '4': '대치해제', '5': '연장', '6': '변경', '7': '변경해제' };
+    return { code: c, label: map[c] || '명령 미상', active: ['1', '2', '5', '6'].includes(c) };
+  }
+
+  function officialWarningEvents(warnings, settingsInput) {
+    const settings = normalizeSettings(settingsInput);
+    if (!settings.warningEnabled) return [];
+    const allowed = { 폭염: settings.warningHeat, 호우: settings.warningRain, 태풍: settings.warningTyphoon };
+    return (Array.isArray(warnings) ? warnings : [])
+      .filter(w => allowed[w && w.type] && warningCommand(w.command).active)
+      .map(w => {
+        const level = warningLevel(w.levelCode != null ? w.levelCode : w.level);
+        return {
+          id: `warning:${w.type}:${w.regionCode || w.regionName || ''}`,
+          type: w.type,
+          criterion: '기상청 특보',
+          scope: 'official',
+          level: level.label,
+          levelRank: level.rank,
+          announcedAt: String(w.announcedAt || ''),
+          effectiveAt: String(w.effectiveAt || ''),
+          region: [w.regionUpperName, w.regionName].filter(Boolean).join(' '),
+          label: `${w.type} ${level.label}`
+        };
+      })
+      .filter(event => event.levelRank > 0)
+      .sort((a, b) => b.levelRank - a.levelRank);
+  }
+
+  function parseCompactKst(value) {
+    const s = String(value || '');
+    if (!/^\d{12}$/.test(s)) return null;
+    const year = Number(s.slice(0, 4));
+    const month = Number(s.slice(4, 6));
+    const day = Number(s.slice(6, 8));
+    const hour = Number(s.slice(8, 10));
+    const minute = Number(s.slice(10, 12));
+    const ms = Date.UTC(year, month - 1, day, hour - 9, minute, 0, 0);
+    return ms;
+  }
+
+  function isFutureForecastAt(value, nowInput) {
+    const forecastMs = parseCompactKst(value);
+    const nowMs = nowInput instanceof Date ? nowInput.getTime() : (nowInput == null ? Date.now() : Number(nowInput));
+    return forecastMs !== null && Number.isFinite(nowMs) && forecastMs > nowMs;
+  }
+
+  function forecastEventPhrase(event, nowInput) {
+    const e = event || {};
+    const s = String(e.forecastAt || '');
+    const time = s.length >= 12 ? `${s.slice(8, 10)}:${s.slice(10, 12)}` : '예보 시각';
+    return isFutureForecastAt(s, nowInput) ? `${time} 예보에서 ${e.label || '기준 초과'} 예상` : `${time} 예보 기준 ${e.label || '기준 초과'}`;
+  }
+
+  function buildAssessment(data, settingsInput, nowInput) {
+    const settings = normalizeSettings(settingsInput);
+    const source = data || {};
+    const currentResult = userThresholdEvents(source.weather || {}, settings, 'current');
+    const forecast = (Array.isArray(source.forecast) ? source.forecast : []).map(point => ({ point, ...userThresholdEvents(point, settings, 'forecast') }));
+    const official = officialWarningEvents(source.warnings, settings);
+    const stale = Boolean(source.weather && source.weather.isStale);
+    const delayed = Boolean(source.weather && source.weather.isDelayed);
+    const currentEvents = stale ? [] : currentResult.events;
+    const forecastEvents = forecast
+      .filter(row => isFutureForecastAt(row.point && row.point.forecastAt, nowInput))
+      .flatMap(row => row.events);
+    const allEvents = [...official, ...currentEvents, ...forecastEvents];
+    let status = '현재 기준 초과 없음';
+    let statusKind = 'normal';
+    if (stale) {
+      status = '기상 자료 갱신 지연';
+      statusKind = 'delayed';
+    } else if (official.length) {
+      status = official[0].label;
+      statusKind = official[0].levelRank >= 3 ? 'danger' : 'warning';
+    } else if (currentEvents.length) {
+      status = currentEvents[0].label;
+      statusKind = 'warning';
+    } else if (forecastEvents.length) {
+      status = forecastEventPhrase(forecastEvents[0], nowInput);
+      statusKind = 'forecast';
+    } else if (delayed) {
+      status = '최신 관측 반영 지연';
+      statusKind = 'delayed';
+    }
+    return { settings, current: currentResult, currentEvents, forecast, forecastEvents, official, allEvents, status, statusKind, stale, delayed };
+  }
+
+  function buildSafetyGuidance(assessment) {
+    const a = assessment || { current: { apparent: null }, currentEvents: [], official: [] };
+    const actions = [];
+    const legal = [];
+    const apparent = Number(a.current && a.current.apparent);
+    const currentEvents = Array.isArray(a.currentEvents) ? a.currentEvents : [];
+    const official = Array.isArray(a.official) ? a.official : [];
+    const hasHeat = currentEvents.some(e => e.type === '폭염') || official.some(e => e.type === '폭염');
+    const hasRain = currentEvents.some(e => e.type === '강수') || official.some(e => e.type === '호우');
+    const hasWind = currentEvents.some(e => e.type === '풍속');
+    const hasTyphoon = official.some(e => e.type === '태풍');
+    const highestOfficialRank = official.reduce((max, e) => Math.max(max, Number(e.levelRank) || 0), 0);
+
+    if (highestOfficialRank === 1) {
+      actions.push('예비특보 단계입니다. 취약 작업 목록, 작업중지 판단 기준, 대피 장소, 비상연락망을 확인하고 작업자에게 사전 공유합니다.');
+    } else if (highestOfficialRank === 2) {
+      actions.push('주의보 단계입니다. 고소·굴착·양중·옥외작업의 착수 여부를 다시 판단하고, 관리감독자 순찰과 비상대기를 강화합니다.');
+    } else if (highestOfficialRank >= 3) {
+      actions.push('경보 이상 단계입니다. 현장 위험성평가 결과에 따라 취약 작업을 즉시 중지하고 작업자를 안전한 장소로 이동시킵니다.');
+    }
+
+    if (hasHeat || (Number.isFinite(apparent) && apparent >= 31)) {
+      actions.push('시원한 물을 작업장 가까이에 충분히 비치하고, 그늘 또는 냉방이 되는 휴식공간과 온·습도계를 확보합니다.');
+      actions.push('작업시간대 조정, 작업 강도·시간 단축, 교대작업, 냉방·통풍장치 가동 중 현장에 적합한 조치를 즉시 시행합니다.');
+      actions.push('어지럼, 두통, 메스꺼움, 근육경련, 의식저하가 나타나면 작업을 중지하고 시원한 장소로 이동시킨 뒤 119 신고와 응급조치를 실시합니다.');
+      legal.push('산업안전보건기준에 관한 규칙 제560조제2항: 폭염작업 시 냉방·통풍, 작업시간대 조정 또는 적절한 휴식시간 부여');
+      legal.push('같은 규칙 제562조제2항·제3항: 온·습도계 비치, 예방·응급조치 사전 고지, 체감온도와 조치사항 기록, 온열질환 의심 시 119 신고 등');
+      if (Number.isFinite(apparent) && apparent >= 33) {
+        actions.push('체감온도 33℃ 이상 폭염작업은 매 2시간 이내에 20분 이상 실제 작업을 멈추고 체온을 낮출 수 있는 휴식을 부여합니다.');
+        legal.push('산업안전보건기준에 관한 규칙 제560조제3항: 체감온도 33℃ 이상 폭염작업 시 매 2시간 이내 20분 이상 휴식');
+      }
+      if (Number.isFinite(apparent) && apparent >= 35) {
+        actions.push('체감온도 35℃ 이상이면 불가피한 경우를 제외하고 14~17시 옥외작업을 중지하거나 작업시간대를 적극 조정합니다.');
+        legal.push('고용노동부 2026년 폭염 단계별 조치 권고: 체감온도 35℃ 이상 시 14~17시 옥외작업 중지');
+      }
+      if ((Number.isFinite(apparent) && apparent >= 38) || highestOfficialRank >= 4) {
+        actions.push('체감온도 38℃ 이상 또는 폭염중대경보이면 긴급조치가 필요한 작업 외 모든 옥외작업을 중단하고 중단–이동–확인 절차를 시행합니다.');
+        legal.push('고용노동부 2026년 폭염 단계별 조치 권고 및 기상청 폭염중대경보 행동요령: 긴급조치 외 옥외작업 중단');
+      }
+    }
+    if (hasRain || hasTyphoon) {
+      actions.push('저지대·지하·맨홀·배수로·굴착부의 침수 가능성을 확인하고 배수펌프, 비상전원, 대피로를 즉시 점검합니다.');
+      actions.push('고소·굴착·밀폐공간·전기설비 주변 작업은 위험성평가 후 중지 또는 축소하고 침수·감전 우려 구역의 출입을 통제합니다.');
+      actions.push('화학물질·폐기물 저장용기, 옥외 배관, 방유제와 유출 차단 설비를 점검하여 빗물 유입과 월류를 차단합니다.');
+      legal.push('산업안전보건기준에 관한 규칙 제37조제1항: 비·눈·바람 등 불안정한 기상으로 근로자가 위험해질 우려가 있으면 작업 중지');
+    }
+    if (hasWind || hasTyphoon) {
+      actions.push('크레인·고소작업대·양중·비계 작업은 장비 사용설명서와 현장 허용풍속을 확인하고 기준 초과 시 즉시 중지합니다.');
+      actions.push('가설울타리, 간판, 덮개, 자재, 실린더와 이동식 설비를 고정하고 낙하·전도·비산 위험구역의 출입을 통제합니다.');
+      legal.push('산업안전보건기준에 관한 규칙 제37조: 악천후와 강풍으로 위험이 예상되는 작업의 중지 및 안전조치');
+    }
+    if (!actions.length) {
+      actions.push('작업 전 시원한 물·휴식공간·배수시설·비상연락망을 점검하고 현장 온·습도계와 기상특보를 함께 확인합니다.');
+      actions.push('기상값이 설정 기준 미만이어도 공정·장비·작업자 상태에 따른 현장 위험성평가 결과를 우선합니다.');
+      legal.push('산업안전보건법 제36조: 유해·위험요인을 파악하고 위험성평가 결과에 따라 필요한 조치를 시행');
+    }
+    return { actions, legalBasis: [...new Set(legal)] };
+  }
+
+  function buildAlarmGuidance(event, assessment) {
+    const e = event || {};
+    const baseApparent = Number(assessment && assessment.current && assessment.current.apparent);
+    const eventApparent = e.criterion === '체감온도' ? Number(e.value) : baseApparent;
+    const shadow = {
+      current: { apparent: Number.isFinite(eventApparent) ? eventApparent : null },
+      currentEvents: e.scope === 'official' || !e.type ? [] : [e],
+      official: e.scope === 'official' ? [e] : []
+    };
+    const guide = buildSafetyGuidance(shadow);
+    if (e.scope === 'forecast' && guide.actions.length) {
+      guide.actions.unshift(`${forecastEventPhrase(e)}입니다. 해당 시각 전에 작업계획과 휴식·중지 기준을 조정하고 작업자에게 미리 알립니다.`);
+    }
+    return guide;
+  }
+
+  function alarmKey(event, locationKey) {
+    const e = event || {};
+    const location = String(locationKey || '');
+    if (e.scope === 'official') return `${location}|official|${e.id || ''}|${e.level || ''}`;
+    return `${location}|${e.scope || 'current'}|${e.id || e.criterion || ''}|${e.forecastAt || ''}`;
+  }
+
+  function reconcileAlarmState(previousKeys, events, locationKey) {
+    const previous = new Set(Array.isArray(previousKeys) ? previousKeys : []);
+    const currentKeys = [];
+    const newEvents = [];
+    for (const event of Array.isArray(events) ? events : []) {
+      const key = alarmKey(event, locationKey);
+      currentKeys.push(key);
+      if (!previous.has(key)) newEvents.push({ ...event, alarmKey: key });
+    }
+    return { activeKeys: currentKeys, newEvents };
+  }
+
+  function weeklyHighlights(days, settingsInput, officialWarnings) {
+    const settings = normalizeSettings(settingsInput);
+    const grouped = new Map();
+    function add(date, type, text) {
+      const key = String(date || '');
+      if (!grouped.has(key)) grouped.set(key, { date: key, types: new Set(), texts: [] });
+      const row = grouped.get(key);
+      row.types.add(type);
+      if (!row.texts.includes(text)) row.texts.push(text);
+    }
+    for (const day of Array.isArray(days) ? days : []) {
+      const date = String(day.date || '');
+      const heatTexts = [];
+      if (isExceeded(day.maxTempC, settings.heatTempThreshold, settings.heatEnabled && settings.heatTempEnabled)) {
+        heatTexts.push(`최고기온 ${Number(day.maxTempC).toFixed(1)}℃로 기온 기준 초과 예상`);
+      }
+      if (isExceeded(day.maxApparentC, settings.heatAppThreshold, settings.heatEnabled && settings.heatAppEnabled)) {
+        heatTexts.push(`최고체감온도 ${Number(day.maxApparentC).toFixed(1)}℃로 체감온도 기준 초과 예상`);
+      }
+      if (heatTexts.length) add(date, 'heat', `폭염 · ${heatTexts.join(' · ')}`);
+    }
+    for (const warning of officialWarningEvents(officialWarnings, settings)) {
+      add(warning.effectiveAt.slice(0, 8), 'official', `기상특보 · ${warning.region || '현재 지역'} ${warning.label}`);
+    }
+    return [...grouped.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(row => ({ date: row.date, type: row.types.has('official') ? 'official' : 'heat', text: row.texts.join(' · ') }));
+  }
+
+  return {
+    DEFAULT_SETTINGS,
+    METRICS,
+    normalizeSettings,
+    apparentTemperature,
+    isExceeded,
+    userThresholdEvents,
+    chartMetricState,
+    chartSlots,
+    warningLevel,
+    warningCommand,
+    officialWarningEvents,
+    parseCompactKst,
+    isFutureForecastAt,
+    forecastEventPhrase,
+    buildAssessment,
+    buildSafetyGuidance,
+    buildAlarmGuidance,
+    alarmKey,
+    reconcileAlarmState,
+    weeklyHighlights
+  };
+});
+</script>
+<script>
+'use strict';
+const API_BASE='https://oci-weather-api.pikakr.chatgpt.site';
+const $=id=>document.getElementById(id),Core=window.SafetyCore;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{return false}},remove(k){try{localStorage.removeItem(k)}catch{}}};
+const KEYS={settings:'weather.settings.v13.1',recent:'weather.recentLocations.v13.1',lastLocation:'weather.lastLocation.v13.1'};
+const state={booting:true,location:null,timer:null,health:null,checking:false,supplementing:false,supplementRunId:0,deferAlarms:true,alarmTimer:null,lastRaw:null,lastWeather:null,weekly:[],activeAlarmKeys:[],services:{current:'wait',current10:'wait',forecast:'wait',warnings:'wait',weekly:'wait'},errors:{},refresh:{forecast:0,warnings:0,tenMinute:0,weekly:0}};
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3300)}
+async function api(path,timeoutMs=10000){let timer;const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('서버 응답 시간이 초과되었습니다.')),timeoutMs)});let r;try{r=await Promise.race([fetch(`${API_BASE}${path}`,{cache:'no-store'}),timeout])}finally{clearTimeout(timer)}let d;try{d=await r.json()}catch{throw new Error('서버 응답을 읽지 못했습니다.')}if(!r.ok)throw new Error(d.error||`HTTP ${r.status}`);return d}
+function finite(v,d=1){return Number.isFinite(Number(v))?Number(v).toFixed(d):'—'}
+function kstText(v){try{return new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(v))}catch{return'—'}}
+function parseKmaTime(s){s=String(s||'');return s.length>=12?`${s.slice(4,6)}월 ${s.slice(6,8)}일 ${s.slice(8,10)}:${s.slice(10,12)}`:'—'}
+function shortTime(s){s=String(s||'');return s.length>=12?`${s.slice(8,10)}:${s.slice(10,12)}`:'—'}
+function shortDate(s){s=String(s||'');if(s.length<8)return'날짜 미상';const d=new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T00:00:00+09:00`);return new Intl.DateTimeFormat('ko-KR',{month:'numeric',day:'numeric',weekday:'short'}).format(d)}
+function windLabel(deg){if(!Number.isFinite(Number(deg)))return'—';return['북','북동','동','남동','남','남서','서','북서'][Math.round(Number(deg)/45)%8]}
+function toGrid(lat,lon){const RE=6371.00877,GRID=5,SLAT1=30,SLAT2=60,OLON=126,OLAT=38,XO=43,YO=136,D=Math.PI/180,re=RE/GRID,slat1=SLAT1*D,slat2=SLAT2*D,olon=OLON*D,olat=OLAT*D;let sn=Math.tan(Math.PI*.25+slat2*.5)/Math.tan(Math.PI*.25+slat1*.5);sn=Math.log(Math.cos(slat1)/Math.cos(slat2))/Math.log(sn);let sf=Math.tan(Math.PI*.25+slat1*.5);sf=Math.pow(sf,sn)*Math.cos(slat1)/sn;let ro=Math.tan(Math.PI*.25+olat*.5);ro=re*sf/Math.pow(ro,sn);let ra=Math.tan(Math.PI*.25+Number(lat)*D*.5);ra=re*sf/Math.pow(ra,sn);let theta=Number(lon)*D-olon;if(theta>Math.PI)theta-=2*Math.PI;if(theta<-Math.PI)theta+=2*Math.PI;theta*=sn;return{nx:Math.floor(ra*Math.sin(theta)+XO+.5),ny:Math.floor(ro-ra*Math.cos(theta)+YO+.5)}}
+function readSettings(){return Core.normalizeSettings({heatEnabled:$('heatEnabled').checked,heatTempEnabled:$('heatTempEnabled').checked,heatTempThreshold:$('heatTempThreshold').value,heatAppEnabled:$('heatAppEnabled').checked,heatAppThreshold:$('heatAppThreshold').value,rainEnabled:false,rainThreshold:15,windEnabled:false,windThreshold:14,humidityChartThreshold:$('humidityChartThreshold').value,warningEnabled:$('warningEnabled').checked,warningHeat:$('warningHeat').checked,warningRain:$('warningRain').checked,warningTyphoon:$('warningTyphoon').checked,interval:$('interval').value})}
+function writeSettings(raw){const s=Core.normalizeSettings(raw);for(const id of['heatEnabled','heatTempEnabled','heatAppEnabled','warningEnabled','warningHeat','warningRain','warningTyphoon'])$(id).checked=s[id];for(const id of['heatTempThreshold','heatAppThreshold','humidityChartThreshold','interval'])$(id).value=String(s[id])}
+let preferenceTimer=null;
+function preferencePayload(){return{settings:readSettings(),recent:recentLocations(),lastLocation:store.get(KEYS.lastLocation,null)}}
+async function savePreferencesNow(){const data=encodeURIComponent(JSON.stringify(preferencePayload()));await api(`/api/preferences/save?data=${data}`)}
+function persistPreferences(){clearTimeout(preferenceTimer);preferenceTimer=setTimeout(()=>savePreferencesNow().catch(e=>toast(`설정 저장 실패: ${e.message}`)),150)}
+async function loadPersistedPreferences(){try{const p=await api('/api/preferences');if(p?.settings)store.set(KEYS.settings,p.settings);if(Array.isArray(p?.recent))store.set(KEYS.recent,cleanRecent(p.recent));if(p?.lastLocation)store.set(KEYS.lastLocation,p.lastLocation)}catch(e){toast(`저장 설정을 불러오지 못했습니다: ${e.message}`)}}
+function normalizeLocationName(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/대한민국|korea|republicofkorea/gi,'').replace(/[\s,·()\-_/]/g,'')}
+function locationDistanceMeters(a,b){const lat1=Number(a?.lat),lon1=Number(a?.lon),lat2=Number(b?.lat),lon2=Number(b?.lon);if(![lat1,lon1,lat2,lon2].every(Number.isFinite))return Infinity;const rad=Math.PI/180,dLat=(lat2-lat1)*rad,dLon=(lon2-lon1)*rad,q=Math.sin(dLat/2)**2+Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLon/2)**2;return 6371000*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
+function sameLocation(a,b){const an=normalizeLocationName(a?.displayName),bn=normalizeLocationName(b?.displayName);return Boolean(an&&bn&&an===bn)||locationDistanceMeters(a,b)<=250}
+function cleanRecent(raw){const out=[];for(const x of Array.isArray(raw)?raw:[]){const loc={displayName:String(x?.displayName||'').trim(),lat:Number(x?.lat),lon:Number(x?.lon),address:x?.address||{},source:x?.source||'',kmaState:x?.kmaState||'',kmaCity:x?.kmaCity||''};if(!loc.displayName||!Number.isFinite(loc.lat)||!Number.isFinite(loc.lon)||out.some(y=>sameLocation(y,loc)))continue;out.push(loc);if(out.length===5)break}return out}
+function recentLocations(){const list=cleanRecent(store.get(KEYS.recent,[]));store.set(KEYS.recent,list);return list}
+function saveRecent(loc){const item={displayName:loc.displayName,lat:Number(loc.lat),lon:Number(loc.lon),address:loc.address||{},source:loc.source||'',kmaState:loc.kmaState||'',kmaCity:loc.kmaCity||''},list=recentLocations().filter(x=>!sameLocation(x,item));list.unshift(item);store.set(KEYS.recent,list.slice(0,5));store.set(KEYS.lastLocation,item);renderRecent();persistPreferences()}
+function clearRecent(){if(!recentLocations().length)return toast('삭제할 최근 위치가 없습니다.');if(!confirm('최근 선택 위치를 모두 삭제하시겠습니까?'))return;store.set(KEYS.recent,[]);renderRecent();persistPreferences();toast('최근 위치를 삭제했습니다.')}
+function renderRecent(){const list=recentLocations();$('recentLocations').innerHTML=list.length?list.map((x,i)=>`<button type="button" data-recent="${i}"><span>${escapeHtml(x.displayName)}</span><small>선택</small></button>`).join(''):'<div class="empty">최근 위치가 없습니다.</div>';document.querySelectorAll('[data-recent]').forEach(b=>b.onclick=()=>selectLocation(list[Number(b.dataset.recent)],true))}
+function renderLocation(){const text=state.location?.displayName||'위치 미설정';$('currentAddress').textContent=text;$('selectedLocation').textContent=text;if(state.location){const g=toGrid(state.location.lat,state.location.lon);$('gridBadge').textContent=`${g.nx}, ${g.ny}`}else $('gridBadge').textContent='—'}
+async function searchAddress(event){event?.preventDefault?.();const q=$('address').value.trim();$('addressResults').innerHTML='';if(q.length<2)return toast('지역명을 두 글자 이상 입력하세요.');$('searchAddress').disabled=true;$('addressResults').innerHTML='<div class="empty">검색 중...</div>';try{const d=await api(`/api/geocode?q=${encodeURIComponent(q)}`,5000);const rows=d.results||[];$('addressResults').innerHTML=rows.length?rows.map((r,i)=>`<button type="button" class="result" data-result="${i}">${escapeHtml(r.displayName)}<small>${Number(r.lat).toFixed(4)}, ${Number(r.lon).toFixed(4)}</small></button>`).join(''):'<div class="empty">검색 결과가 없습니다. 지역명을 다시 확인하세요.</div>';document.querySelectorAll('[data-result]').forEach(b=>b.onclick=()=>selectLocation(rows[Number(b.dataset.result)],true))}catch(e){$('addressResults').innerHTML=`<div class="empty">검색 실패 · ${escapeHtml(e.message)}</div>`}finally{$('searchAddress').disabled=false}}
+async function useCurrentLocation(silent=false){if(!navigator.geolocation)throw new Error('현재 위치 기능을 지원하지 않습니다.');if(!silent)toast('현재 위치를 확인하고 있습니다.');const pos=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:15000,maximumAge:60000}));let loc={displayName:`위도 ${pos.coords.latitude.toFixed(4)}, 경도 ${pos.coords.longitude.toFixed(4)}`,lat:pos.coords.latitude,lon:pos.coords.longitude,address:{},source:'gps'};try{const r=await api(`/api/reverse?lat=${loc.lat}&lon=${loc.lon}`);if(r?.displayName)loc=r}catch{}await selectLocation(loc,true)}
+async function selectLocation(loc,remember=true){state.supplementRunId++;clearTimeout(state.alarmTimer);state.deferAlarms=true;state.location={displayName:loc.displayName||`${loc.lat}, ${loc.lon}`,lat:Number(loc.lat),lon:Number(loc.lon),address:loc.address||{},source:loc.source||'',kmaState:loc.kmaState||loc.address?.kmaState||'',kmaCity:loc.kmaCity||loc.address?.kmaCity||''};state.lastRaw=null;state.lastWeather=null;state.weekly=[];state.activeAlarmKeys=[];state.refresh={forecast:0,warnings:0,tenMinute:0,weekly:0};state.services={current:'wait',current10:'wait',forecast:'wait',warnings:'wait',weekly:'wait'};state.errors={};$('address').value=state.location.displayName;$('addressResults').innerHTML='';renderLocation();renderServiceStatus();renderForecast([],null);renderWarnings([],null,false);renderWeekly();store.set(KEYS.lastLocation,state.location);if(remember)saveRecent(state.location);else persistPreferences();await checkWeather(true);restartTimer()}
+function nameVariants(values){const list=Array.isArray(values)?values:[values],out=[];for(const value of list.filter(Boolean)){const source=String(value).replace(/대한민국/gi,'').replace(/\([^)]*\)/g,' ');for(const token of [source,...source.split(/[\s,·.\/\-_]+/)]){const raw=String(token).replace(/[^0-9A-Za-z가-힣]/g,'');if(!raw)continue;const compact=raw.replace(/특별자치|광역|특별|자치/g,''),short=compact.replace(/(특별시|광역시|특별자치시|특별자치도|시|군|구)$/,'');out.push(raw,compact,short)}}return[...new Set(out.filter(x=>x.length>=2))]}
+function locationCityTokens(loc){const a=loc?.address||{},displayParts=String(loc?.displayName||'').split(/[\s,·.\/\-_]+/).filter(x=>/(시|군|구)$/.test(x));return nameVariants([loc?.kmaCity,a.kmaCity,a.city,a.city_district,a.county,a.borough,a.municipality,a.town,...displayParts])}
+function warningRegionTokens(w){const parts=String(w?.regionFullName||'').split(/[\s,·.\/\-_]+/).filter(x=>/(시|군|구|부)$/.test(x));return nameVariants([w?.regionName,...parts])}
+function regionMatchesCity(region,city){if(!region||!city)return false;if(region===city)return true;return region.startsWith(city)||city.startsWith(region)}
+function matchWarnings(all){const cityTokens=locationCityTokens(state.location);return(all||[]).filter(w=>{const regions=warningRegionTokens(w);return regions.some(r=>cityTokens.some(c=>regionMatchesCity(r,c)))}).filter(w=>['폭염','호우','태풍'].includes(w.type)&&Core.warningLevel(w.levelCode??w.level).rank>0&&Core.warningCommand(w.command).active)}
+function setService(name,status,message=''){state.services[name]=status;state.errors[name]=message;renderServiceStatus()}
+function renderServiceStatus(){const labels={current:'현재 관측',current10:'최신 관측 보강',forecast:'6시간 예보',warnings:'기상특보',weekly:'이번 주 정보'},states={wait:['확인 중',''],ok:['정상','ok'],stale:['이전 자료','warn'],fail:['확인 필요','fail']};$('serviceGrid').innerHTML=Object.keys(labels).map(k=>{const [text,cls]=states[state.services[k]]||states.wait;return`<div class="service-item ${cls}"><strong>${labels[k]} · ${text}</strong><span>${escapeHtml(state.errors[k]||'')}</span></div>`}).join('');const values=Object.values(state.services);const overall=state.health?.overall==='blocked'?'blocked':values.includes('fail')?'limited':values.includes('stale')?'limited':values.every(x=>x==='ok'||x==='wait')?'ready':'limited';$('system').className=`system ${overall}`;$('systemText').textContent=overall==='ready'?'정상 동작':overall==='blocked'?'실행 환경 확인 필요':'일부 정보 지연'}
+function metaChip(text,kind){return`<span class="meta-chip ${kind}">${escapeHtml(text)}</span>`}
+function renderStatus(assessment,d){$('statusTitle').textContent=assessment.status;$('statusCard').dataset.state=assessment.statusKind==='danger'?'danger':assessment.statusKind==='normal'?'normal':assessment.statusKind==='delayed'?'delayed':'warning';const w=d.weather,updateKind=w.isStale?'red':'blue',obsKind=w.isStale?'red':w.isDelayed?'amber':'green';$('metaRow').innerHTML=metaChip(`화면 갱신 ${kstText(d.checkedAt)}`,updateKind)+metaChip(`관측 ${parseKmaTime(w.observedAt)}`,obsKind)+metaChip(`${readSettings().interval}분 자동 갱신`,'');const basis=[`기온 ${finite(w.temperatureC)}℃`,`체감 ${finite(assessment.current.apparent)}℃`,`습도 ${finite(w.humidityPct,0)}%`,`강수 ${finite(w.rain1hMm)}mm`,`풍속 ${finite(w.windSpeedMs)}m/s`];if(assessment.official[0])basis.push(`공식 ${assessment.official[0].label}`);else if(assessment.currentEvents[0])basis.push(assessment.currentEvents[0].label);else if(assessment.forecastEvents[0])basis.push(Core.forecastEventPhrase(assessment.forecastEvents[0]));else basis.push('설정 기준 초과 없음');$('statusBasis').innerHTML=basis.map(x=>`<span>${escapeHtml(x)}</span>`).join('');const guide=Core.buildSafetyGuidance(assessment);$('safetyActions').innerHTML=guide.actions.map((x,i)=>`<div class="safety-item"><b>${i+1}</b><span>${escapeHtml(x)}</span></div>`).join('');$('legalBasis').innerHTML=guide.legalBasis.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+function chartSvg(data,metric,settings){const info=Core.METRICS[metric],W=480,H=220,L=40,R=14,T=27,B=36,slots=Core.chartSlots(data,metric,settings),values=slots.map(x=>x.value).filter(Number.isFinite);if(!values.length)return'<div class="empty">자료 없음</div>';let min=Math.min(...values),max=Math.max(...values),threshold=slots[0]?.threshold;if(Number.isFinite(threshold)){min=Math.min(min,threshold);max=Math.max(max,threshold)}if(min===max){min-=1;max+=1}else{const pad=(max-min)*.18;min-=pad;max+=pad}const x=i=>L+(W-L-R)*(data.length===1?.5:i/(data.length-1)),y=v=>T+(H-T-B)*(1-(v-min)/(max-min));let bands='',pts='',labels='',times='';for(const slot of slots){if(slot.exceeded){const sx=L+(W-L-R)*slot.start,ex=L+(W-L-R)*slot.end;bands+=`<rect x="${sx}" y="${T}" width="${Math.max(1,ex-sx)}" height="${H-T-B}" rx="5" fill="rgba(207,63,77,.12)"/>`}}data.forEach((d,i)=>{const st=slots[i],v=st.value,color=st.exceeded?'#cf3f4d':'#2765e8';if(Number.isFinite(v)){pts+=`${x(i)},${y(v)} `;labels+=`<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="${color}"/><text x="${x(i)}" y="${y(v)-10}" text-anchor="middle" font-size="12" font-weight="760" fill="${color}">${v.toFixed(metric==='humidity'?0:1)}${info.unit}</text>`}times+=`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="11" fill="#68737d">${shortTime(d.forecastAt)}</text>`});const thresholdLine=Number.isFinite(threshold)&&slots[0]?.enabled?`<line x1="${L}" y1="${y(threshold)}" x2="${W-R}" y2="${y(threshold)}" stroke="#cf3f4d" stroke-width="1.4" stroke-dasharray="5 5"/><text x="${W-R}" y="${y(threshold)-5}" text-anchor="end" font-size="10" fill="#cf3f4d">기준 ${threshold}${info.unit}</text>`:'';return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${info.label} 예보 차트">${bands}${thresholdLine}<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#d9dee4"/><polyline points="${pts.trim()}" fill="none" stroke="#2765e8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${labels}${times}</svg>`}
+function renderForecast(list,error){if(!list?.length){$('forecastCharts').innerHTML='<div class="empty" style="grid-column:1/-1">6시간 예보를 받지 못했습니다. 현재 관측은 계속 표시됩니다.</div>';$('forecastNote').textContent=error||'';return}const s=readSettings(),metrics=['temperature','humidity','wind','rain'];$('forecastCharts').innerHTML=metrics.map(metric=>{const info=Core.METRICS[metric],state0=Core.chartMetricState(list[0],metric,s),label=state0.enabled?`표시 기준 ${state0.threshold}${info.unit}`:'기준 사용 안 함';return`<div class="chart-card"><div class="chart-title"><strong>${info.label}</strong><span>${label}</span></div>${chartSvg(list,metric,s)}</div>`}).join('');$('forecastNote').textContent='빨간 배경은 해당 차트 항목이 설정 기준을 초과한 시간만 표시합니다. 습도 기준은 차트 표시 전용이며 알람을 발생시키지 않습니다.'}
+function renderWarnings(matched,error,stale){$('warningCount').textContent=`${matched.length}건`;if(!matched.length){$('warnings').innerHTML=`<div class="empty" style="grid-column:1/-1">${error?escapeHtml(error):'현재 일치하는 특보가 없습니다.'}</div>`;return}$('warnings').innerHTML=matched.map(w=>{const level=Core.warningLevel(w.levelCode??w.level),cls=level.rank>=3?'warning-level':level.rank===2?'advisory-level':'';return`<div class="warning ${cls}"><strong>${escapeHtml(w.type)} ${escapeHtml(level.label)}${stale?' · 이전 자료':''}</strong><span>${escapeHtml([w.regionUpperName,w.regionName].filter(Boolean).join(' '))}<br>발효 ${parseKmaTime(w.effectiveAt)}</span></div>`}).join('')}
+function renderWeekly(){const highlights=Core.weeklyHighlights(state.weekly,readSettings(),state.lastWeather?.warningsStale?[]:(state.lastWeather?.matched||[]));if(!state.weekly.length&&!highlights.length){$('weeklyHighlights').innerHTML='<div class="empty" style="grid-column:1/-1">이번 주 정보를 받지 못했습니다.</div>';return}if(!highlights.length){$('weeklyHighlights').innerHTML='<div class="weekly-card"><strong>특이사항 없음</strong><span>폭염 기준 초과 예상 또는 공식 기상특보가 없습니다.</span></div>'}else{$('weeklyHighlights').innerHTML=highlights.map(h=>`<div class="weekly-card ${h.type==='official'?'official':'danger'}"><strong>${h.date?shortDate(h.date):'기상특보'}</strong><span>${escapeHtml(h.text)}</span></div>`).join('')}$('weeklyNote').textContent=state.services.weekly==='stale'?'이전 정상 예보를 표시하고 있습니다. 새 자료가 들어오면 자동으로 바뀝니다.':'같은 날짜의 폭염 예상과 공식 기상특보를 한 칸에 묶어 표시합니다.'}
+function renderWeather(d){const w=d.weather,a=d.assessment;$('temperature').textContent=finite(w.temperatureC);$('apparent').textContent=finite(a.current.apparent);$('humidity').textContent=finite(w.humidityPct,0);$('rain').textContent=finite(w.rain1hMm);$('pty').textContent=`강수형태 ${w.precipitationType||'—'}`;$('wind').textContent=finite(w.windSpeedMs);$('windDir').textContent=`풍향 ${windLabel(w.windDirectionDeg)} ${finite(w.windDirectionDeg,0)}°`;const skyPoint=(d.forecast||[]).find(x=>Core.isFutureForecastAt(x.forecastAt))||(d.forecast||[])[0];$('sky').textContent=skyPoint?.sky||'—';$('temperatureSub').textContent=w.isStale?'갱신 지연 자료':'최근 관측';$('humiditySub').textContent=`차트 기준 ${readSettings().humidityChartThreshold}%`;renderStatus(a,d);renderForecast(d.forecast,d.forecastError);renderWarnings(d.matched,d.warningError,d.warningsStale);renderWeekly()}
+function showAlarm(event,{test=false}={}){const official=event?.scope==='official';$('alarmTitle').textContent=test?'알람 테스트':`${event?.label||'기상 위험'} 알람`;$('alarmLocation').textContent=state.location?.displayName||'현재 선택 위치';$('alarmMetric').textContent=test?'알람 화면이 정상적으로 표시되었습니다.':official?`${event.region||'현재 지역'} · ${event.label}`:`${event.criterion} ${finite(event.value)}${event.unit}`;$('alarmReason').textContent=test?'실제 알람은 기준 초과 내용과 함께 즉시 조치 가이드 및 법적·행정 근거를 표시합니다.':official?`기상청 공식 ${event.level}입니다. 발효 시각과 현장 상황을 확인해 즉시 대응하십시오.`:event.scope==='forecast'?`${Core.forecastEventPhrase(event)}입니다. 설정 기준은 ${event.threshold}${event.unit}입니다.`:`현재 값이 설정 기준 ${event.threshold}${event.unit} 이상입니다.`;const guide=test?{actions:['알람 발생 시 작업 종류와 위험요인을 확인하고 현장 책임자에게 즉시 공유합니다.','실제 알람에서는 폭염·공식 기상특보에 맞는 상세 조치가 표시됩니다.'],legalBasis:['실제 알람에서는 관련 법적 근거(산업안전보건기준에 관한 규칙 조문)와 고용노동부·기상청 행정기준이 함께 표시됩니다.']}:Core.buildAlarmGuidance(event,state.lastWeather?.assessment);$('alarmActions').innerHTML=guide.actions.map((x,i)=>`<div class="safety-item"><b>${i+1}</b><span>${escapeHtml(x)}</span></div>`).join('');$('alarmLegalBasis').innerHTML=guide.legalBasis.map(x=>`<li>${escapeHtml(x)}</li>`).join('');$('alarmModal').classList.add('show')}
+function processAlarms(assessment){if(state.deferAlarms)return;let events=[...assessment.currentEvents];if(!state.lastRaw?.forecastStale)events.push(...assessment.forecastEvents);if(!state.lastRaw?.warningsStale)events.push(...assessment.official);const next=Core.reconcileAlarmState(state.activeAlarmKeys,events,state.location?.displayName||'');state.activeAlarmKeys=next.activeKeys;if(next.newEvents[0])showAlarm(next.newEvents[0])}
+function applyAndRender({alarms=true}={}){if(!state.lastRaw?.weather)return;const matched=matchWarnings(state.lastRaw.warnings||[]),assessment=Core.buildAssessment({weather:state.lastRaw.weather,forecast:state.lastRaw.forecastStale?[]:(state.lastRaw.forecast||[]),warnings:state.lastRaw.warningsStale?[]:matched},readSettings());state.lastWeather={...state.lastRaw,matched,assessment};renderWeather(state.lastWeather);if(alarms)processAlarms(assessment)}
+function releaseInitialAlarms(runId,key){if(runId!==state.supplementRunId||key!==gridKey())return;state.deferAlarms=false;applyAndRender({alarms:false});clearTimeout(state.alarmTimer);state.alarmTimer=setTimeout(()=>{if(runId===state.supplementRunId&&key===gridKey()&&state.lastWeather)processAlarms(state.lastWeather.assessment)},650)}
+function gridKey(){if(!state.location)return'';const g=toGrid(state.location.lat,state.location.lon);return`${g.nx},${g.ny}`}
+async function refreshPriority(key,g,force){
+  const now=Date.now(),needForecast=force||now-state.refresh.forecast>=25*60000,needWarnings=force||now-state.refresh.warnings>=5*60000;
+  if(!needForecast&&!needWarnings)return;
+  try{
+    const d=await api(`/api/priority?nx=${g.nx}&ny=${g.ny}`);
+    if(key!==gridKey())return;
+    if(needForecast){state.refresh.forecast=Date.now();if(d.forecast?.ok){state.lastRaw={...state.lastRaw,forecast:d.forecast.result?.items||[],forecastStale:Boolean(d.forecast.result?.isStale),forecastError:null};setService('forecast',d.forecast.result?.isStale?'stale':'ok',d.forecast.result?.isStale?'이전 정상 예보 사용':'')}else{state.lastRaw={...state.lastRaw,forecastError:d.forecast?.error||'6시간 예보 조회 실패'};setService('forecast','fail',state.lastRaw.forecastError)}}
+    if(needWarnings){state.refresh.warnings=Date.now();if(d.warnings?.ok){state.lastRaw={...state.lastRaw,warnings:d.warnings.result?.items||[],warningsStale:Boolean(d.warnings.result?.isStale),warningError:null};setService('warnings',d.warnings.result?.isStale?'stale':'ok',d.warnings.result?.isStale?'이전 정상 특보 자료 사용':'')}else{state.lastRaw={...state.lastRaw,warningError:d.warnings?.error||'기상특보 조회 실패'};setService('warnings','fail',state.lastRaw.warningError)}}
+    applyAndRender({alarms:false});
+  }catch(e){
+    if(needForecast){state.refresh.forecast=Date.now()-20*60000;state.lastRaw={...state.lastRaw,forecastError:e.message};setService('forecast','fail',e.message)}
+    if(needWarnings){state.refresh.warnings=Date.now()-4*60000;state.lastRaw={...state.lastRaw,warningError:e.message};setService('warnings','fail',e.message)}
+    applyAndRender({alarms:false});
+  }
+}
+async function refreshTenMinute(key,g,force){const now=Date.now();if(!force&&now-state.refresh.tenMinute<8*60000)return;try{const d=await api(`/api/current10?nx=${g.nx}&ny=${g.ny}`);if(key!==gridKey())return;state.refresh.tenMinute=Date.now();state.lastRaw={...state.lastRaw,checkedAt:d.checkedAt,weather:d.weather};setService('current10',d.weather.isStale?'stale':'ok',d.weather.isStale?'이전 정상 관측 사용':'');applyAndRender()}catch(e){state.refresh.tenMinute=Date.now()-6*60000;setService('current10','fail',e.message)}}
+async function refreshWarnings(key,force){const now=Date.now();if(!force&&now-state.refresh.warnings<5*60000)return;try{const d=await api('/api/warnings');if(key!==gridKey())return;state.refresh.warnings=Date.now();state.lastRaw={...state.lastRaw,warnings:d.result?.items||[],warningsStale:Boolean(d.result?.isStale),warningError:null};setService('warnings',d.result?.isStale?'stale':'ok',d.result?.isStale?'이전 정상 특보 자료 사용':'');applyAndRender()}catch(e){state.refresh.warnings=Date.now()-4*60000;state.lastRaw={...state.lastRaw,warningError:e.message};setService('warnings','fail',e.message);applyAndRender()}}
+async function refreshForecast(key,g,force){const now=Date.now();if(!force&&now-state.refresh.forecast<25*60000)return;try{const d=await api(`/api/forecast?nx=${g.nx}&ny=${g.ny}`);if(key!==gridKey())return;state.refresh.forecast=Date.now();state.lastRaw={...state.lastRaw,forecast:d.result?.items||[],forecastStale:Boolean(d.result?.isStale),forecastError:null};setService('forecast',d.result?.isStale?'stale':'ok',d.result?.isStale?'이전 정상 예보 사용':'');applyAndRender()}catch(e){state.refresh.forecast=Date.now()-20*60000;state.lastRaw={...state.lastRaw,forecastError:e.message};setService('forecast','fail',e.message);applyAndRender()}}
+async function refreshWeekly(key,g,force){const now=Date.now();if(!force&&now-state.refresh.weekly<60*60000)return;try{const d=await api(`/api/weekly?nx=${g.nx}&ny=${g.ny}`);if(key!==gridKey())return;state.refresh.weekly=Date.now();state.weekly=d.result?.days||[];setService('weekly',d.result?.isStale?'stale':'ok',d.result?.isStale?'이전 정상 예보 사용':'');renderWeekly()}catch(e){state.refresh.weekly=Date.now()-50*60000;setService('weekly','fail',e.message);renderWeekly()}}
+async function refreshSupplementary(force=false){if(!state.location)return;const runId=++state.supplementRunId,key=gridKey(),g=toGrid(state.location.lat,state.location.lon);state.supplementing=true;try{for(const task of [()=>refreshPriority(key,g,force),()=>refreshWeekly(key,g,force)]){if(runId!==state.supplementRunId||key!==gridKey())return;await task()}releaseInitialAlarms(runId,key);if(runId===state.supplementRunId&&key===gridKey())await refreshTenMinute(key,g,force)}finally{if(runId===state.supplementRunId){state.supplementing=false;if(state.deferAlarms)releaseInitialAlarms(runId,key)}}}
+async function checkWeather(force=false){if(!state.location||state.checking||state.health?.overall==='blocked')return;state.checking=true;const key=gridKey(),g=toGrid(state.location.lat,state.location.lon);try{const d=await api(`/api/current?nx=${g.nx}&ny=${g.ny}`);if(key!==gridKey())return;const old=state.lastRaw&&state.lastRaw.gridKey===key?state.lastRaw:{};state.lastRaw={checkedAt:d.checkedAt,nx:d.nx,ny:d.ny,weather:d.weather,forecast:old.forecast||[],forecastStale:old.forecastStale||false,forecastError:old.forecastError||null,warnings:old.warnings||[],warningsStale:old.warningsStale||false,warningError:old.warningError||null,gridKey:key};setService('current',d.weather.isStale?'stale':'ok',d.weather.isStale?'이전 정상 관측 사용':'');applyAndRender({alarms:!state.deferAlarms});void refreshSupplementary(force)}catch(e){setService('current','fail',e.message);$('statusTitle').textContent='날씨 조회 실패';$('statusCard').dataset.state='danger';$('statusBasis').innerHTML=`<span>${escapeHtml(e.message)}</span>`;toast(e.message)}finally{state.checking=false}}
+function restartTimer(){clearInterval(state.timer);const min=readSettings().interval;$('interval').value=String(min);state.timer=setInterval(()=>checkWeather(false),min*60000)}
+function applySettings(){const s=readSettings();writeSettings(s);store.set(KEYS.settings,s);persistPreferences();restartTimer();state.activeAlarmKeys=[];applyAndRender();renderWeekly();toast('알람 설정을 적용했습니다.')}
+function renderHealth(health,target){const issues=health.checks.filter(x=>x.status!=='pass');target.innerHTML=issues.map(x=>`<div class="diag ${x.status==='fail'?'fail':''}"><i></i><div><strong>${escapeHtml(x.name)}</strong><span>${escapeHtml(x.message)}</span></div></div>`).join('')||'<div class="empty">문제가 없습니다.</div>'}
+function clientChecks(){const c=[];if(!navigator.onLine)c.push({name:'인터넷 연결',status:'fail',message:'오프라인 상태입니다.',required:true});if(!navigator.geolocation)c.push({name:'현재 위치',status:'warn',message:'주소 검색으로 위치를 설정할 수 있습니다.',required:false});return c}
+async function runHealth({startup=false}={}){if(startup){$('startupModal').classList.add('show');$('startupText').textContent='프로그램 실행 환경을 확인하고 있습니다.';$('closeStartup').style.display='none'}try{const server=await api('/api/health',5000),checks=[...server.checks,...clientChecks()],blocked=checks.some(x=>x.required&&x.status==='fail'),issues=checks.some(x=>x.status!=='pass'),overall=blocked?'blocked':issues?'limited':'ready';state.health={overall,checks};renderServiceStatus();if(issues){renderHealth(state.health,$('healthList'));if(startup){renderHealth(state.health,$('startupChecks'));$('startupText').textContent=blocked?'필수 실행 환경에 문제가 있습니다.':'일부 기능에 문제가 있습니다.';$('closeStartup').style.display='inline-flex'}}else{$('healthList').innerHTML='<div class="empty">실행 환경에 문제가 없습니다.</div>';if(startup)$('startupModal').classList.remove('show')}return state.health}catch(e){state.health={overall:'blocked',checks:[{name:'로컬 실행 서버',status:'fail',message:e.message,required:true}]};renderServiceStatus();renderHealth(state.health,$('healthList'));if(startup){renderHealth(state.health,$('startupChecks'));$('startupText').textContent='프로그램 실행 환경을 확인해 주세요.';$('closeStartup').style.display='inline-flex'}return state.health}}
+async function initialize(){state.booting=true;try{await loadPersistedPreferences();writeSettings(store.get(KEYS.settings,Core.DEFAULT_SETTINGS));renderRecent();renderServiceStatus();const last=store.get(KEYS.lastLocation,null);if(last&&Number.isFinite(Number(last.lat))&&Number.isFinite(Number(last.lon))){state.location=last;$('address').value=last.displayName||'';renderLocation()}await runHealth({startup:true});if(state.health?.overall==='blocked')return;try{await useCurrentLocation(true)}catch{const fallback=last||recentLocations()[0];if(fallback)await selectLocation(fallback,false);else{$('currentAddress').textContent='현재 위치를 사용하거나 지역을 검색하세요.';$('selectedLocation').textContent='위치가 설정되지 않았습니다.';$('metaRow').innerHTML=metaChip('위치 선택 대기','amber')}}}finally{state.booting=false}}
+$('searchAddress').onclick=searchAddress;$('address').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchAddress(e)}});$('useLocation').onclick=()=>useCurrentLocation(false).catch(e=>toast(`위치 확인 실패: ${e.message}`));$('clearRecent').onclick=clearRecent;$('saveSettings').onclick=applySettings;$('testAlarm').onclick=()=>showAlarm(null,{test:true});$('closeStartup').onclick=()=>$('startupModal').classList.remove('show');$('closeAlarm').onclick=()=>$('alarmModal').classList.remove('show');$('rerunHealth').onclick=()=>runHealth({startup:false});window.addEventListener('online',()=>runHealth({startup:false}));window.addEventListener('offline',()=>runHealth({startup:false}));initialize();
+</script>
+</body>
+</html>
