@@ -23,15 +23,14 @@ html{scroll-padding-top:76px}
 html,body.mobile-page{width:100%;max-width:100%;overflow-x:hidden}
 body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));background:#eef3f8}
 .mobile-page .topbar{padding-top:env(safe-area-inset-top);background:rgba(238,243,248,.94)}
-.mobile-page .top-inner{width:100%;max-width:620px;padding:11px 14px;gap:8px}
+.mobile-page .top-inner{width:100%;max-width:520px;padding:10px 14px;gap:8px}
 .mobile-page .brand{gap:9px;min-width:0}
 .mobile-page .logo{width:38px;height:38px;border-radius:13px}
 .mobile-page .brand strong{min-width:0;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mobile-page .top-actions{display:flex;align-items:center;gap:7px;min-width:0;flex:0 0 auto}
-.mobile-page .system{padding:8px 10px;font-size:11px;min-width:0}
-.mobile-page .system span{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mobile-page .system{display:none!important}
 .mobile-page .desktop-link{display:grid;place-items:center;min-width:38px;height:38px;padding:0 9px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#40505f;font-size:11px;font-weight:850;text-decoration:none}
-.mobile-page .page{width:100%;max-width:620px;padding:12px;margin:0 auto;overflow-x:hidden}
+.mobile-page .page{width:100%;max-width:520px;padding:12px;margin:0 auto;overflow-x:hidden}
 .mobile-page .card{min-width:0;max-width:100%;border-radius:20px;box-shadow:0 8px 28px rgba(24,34,44,.06)}
 .mobile-page .status-card{min-height:0;padding:20px;margin-bottom:12px}
 .mobile-page .status-card:after{width:260px;height:260px;right:-110px;bottom:-150px}
@@ -55,9 +54,9 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page #weeklyPanel{order:4}
 .mobile-page #warningsPanel{order:5}
 .mobile-page #alarmSettings{order:6}
-.mobile-page #diagnosticPanel{order:7}
+.mobile-page #diagnosticPanel{display:none!important}
 .mobile-page #statusCard,.mobile-page #currentWeather,.mobile-page #locationPanel,.mobile-page #forecastPanel,.mobile-page #weeklyPanel,.mobile-page #warningsPanel,.mobile-page #alarmSettings,.mobile-page #diagnosticPanel{scroll-margin-top:76px}
-.mobile-page .panel{padding:18px}
+.mobile-page .panel{padding:18px;overflow:hidden}
 .mobile-page .head{margin-bottom:14px}
 .mobile-page .head>div,.mobile-page .rule-title>div{min-width:0}
 .mobile-page .head h2{font-size:18px}
@@ -67,43 +66,61 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .input-row{gap:7px}
 .mobile-page .input-row .btn{flex:0 0 72px}
 .mobile-page .result,.mobile-page .recent button{min-height:48px}
-.mobile-page .weather-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.mobile-page .metric{min-height:126px;padding:15px;border-radius:16px}
-.mobile-page .metric small{font-size:13px}
-.mobile-page .metric strong{font-size:31px;line-height:1.05;margin:14px 0 10px}
-.mobile-page .metric #sky,.mobile-page #sky{font-size:28px!important}
-.mobile-page .metric .sub{font-size:12px}
+.mobile-page #locationPanel .location-now{font-weight:760;border:1px solid #d8e5fb}
+.mobile-page #locationPanel .recent{max-height:250px;overflow-y:auto;overscroll-behavior:contain}
+.mobile-page #currentWeather{padding:0;background:#fff}
+.mobile-page #currentWeather .head{padding:18px 18px 0;margin-bottom:14px}
+.mobile-page .weather-hero{margin:0 12px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-radius:19px;background:linear-gradient(145deg,#2765e8,#4f8ef6);color:#fff;box-shadow:0 14px 28px rgba(39,101,232,.22)}
+.mobile-page .weather-primary,.mobile-page .weather-summary{min-width:0}
+.mobile-page .weather-primary>small{display:block;font-size:12px;font-weight:760;opacity:.82}
+.mobile-page .temperature-value{display:flex;align-items:flex-start;margin:4px 0 2px;line-height:1}
+.mobile-page .temperature-value strong{font-size:58px;letter-spacing:-.07em}
+.mobile-page .temperature-value em{margin:5px 0 0 5px;font-size:21px;font-style:normal;font-weight:750;opacity:.88}
+.mobile-page #temperatureSub{display:block;font-size:11px;opacity:.78}
+.mobile-page .weather-summary{text-align:right}
+.mobile-page .weather-summary #sky{display:block;max-width:150px;font-size:22px!important;line-height:1.2;overflow-wrap:anywhere}
+.mobile-page .feels-like{margin-top:10px;font-size:12px;opacity:.88}
+.mobile-page .feels-like b{display:block;margin-top:2px;font-size:22px;letter-spacing:-.03em}
+.mobile-page .formula-note{display:block;margin-top:4px;font-size:9px;opacity:.7}
+.mobile-page .weather-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 12px 16px}
+.mobile-page .weather-mini{min-width:0;padding:13px 10px;border:1px solid var(--line);border-radius:15px;background:#f8fafc;text-align:center}
+.mobile-page .weather-mini>span{display:block;font-size:11px;color:var(--muted)}
+.mobile-page .weather-mini>strong{display:block;margin:8px 0 5px;font-size:20px;line-height:1.1;letter-spacing:-.04em}
+.mobile-page .weather-mini>small{display:block;min-height:28px;font-size:9px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
 .mobile-page .chart-grid,.mobile-page .weekly-grid,.mobile-page .warnings{grid-template-columns:1fr}
 .mobile-page .chart-card{min-width:0;max-width:100%;padding:13px;border-radius:16px;overflow:hidden}
 .mobile-page .chart-card svg{width:100%;max-width:100%;height:190px;overflow:hidden}
 .mobile-page .chart-title strong{font-size:14px}
-.mobile-page .weekly-card,.mobile-page .warning{padding:14px}
+.mobile-page .weekly-card,.mobile-page .warning{padding:15px;border-radius:16px}
 .mobile-page .check-grid{grid-template-columns:repeat(3,1fr)}
 .mobile-page .check-chip{min-height:44px}
 .mobile-page .option-row{grid-template-columns:minmax(0,1fr) 108px}
 .mobile-page .alarm-actions{grid-template-columns:1fr 1fr}
 .mobile-page .service-grid{grid-template-columns:1fr}
 .mobile-page .location-line,.mobile-page .location-now,.mobile-page .meta-chip,.mobile-page .basis span,.mobile-page .weekly-card span,.mobile-page .warning span,.mobile-page .diag span{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
-.mobile-page .modal{align-items:flex-end;padding:0}
-.mobile-page .modal-box{width:100%;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0}
+.mobile-page .modal{width:100%;max-width:100%;align-items:flex-end;padding:0;overflow-x:hidden}
+.mobile-page .modal-box{width:100%;max-width:100%;min-width:0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;overflow-x:hidden}
+.mobile-page .modal-box>*,.mobile-page .diag-list,.mobile-page .service-grid,.mobile-page .service-item{min-width:0;max-width:100%}
+.mobile-page .diag{width:100%;min-width:0;max-width:100%;grid-template-columns:9px minmax(0,1fr);overflow:hidden}
+.mobile-page .diag>div{min-width:0;max-width:100%}
+.mobile-page .diag strong,.mobile-page .diag span,.mobile-page .service-item strong,.mobile-page .service-item span,.mobile-page #startupText{white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 .mobile-page .modal-box h2{font-size:22px}
 .mobile-page .toast{bottom:calc(82px + env(safe-area-inset-bottom));width:calc(100% - 28px);max-width:520px;text-align:center}
 .mobile-page .data-credit{padding-bottom:12px}
-.mobile-nav{position:fixed;left:50%;bottom:0;z-index:60;width:min(100%,620px);transform:translateX(-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(26,38,52,.1);backdrop-filter:blur(18px)}
+.mobile-nav{position:fixed;left:50%;bottom:0;z-index:60;width:min(100%,520px);transform:translateX(-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -10px 30px rgba(26,38,52,.1);backdrop-filter:blur(18px)}
 .mobile-nav a{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;color:#64717c;text-decoration:none;font-size:10px;font-weight:760}
 .mobile-nav a:active,.mobile-nav a:focus{background:var(--blue-soft);color:var(--blue);outline:none}
 .mobile-nav b{font-size:17px;line-height:1}
-@media(max-width:420px){
-  .mobile-page .system span{display:none}
-  .mobile-page .system{min-width:32px;justify-content:center}
-}
 @media(max-width:360px){
   .mobile-page .page{padding:9px}
   .mobile-page .panel,.mobile-page .status-card{padding:16px}
   .mobile-page .brand strong{font-size:15px}
   .mobile-page .status-title{font-size:26px}
-  .mobile-page .metric{padding:13px}
-  .mobile-page .metric strong{font-size:27px}
+  .mobile-page .weather-hero{padding:17px}
+  .mobile-page .temperature-value strong{font-size:52px}
+  .mobile-page .weather-summary #sky{font-size:19px!important}
+  .mobile-page .weather-mini{padding:11px 7px}
+  .mobile-page .weather-mini>strong{font-size:18px}
   .mobile-page .alarm-actions{grid-template-columns:1fr}
 }
 
@@ -114,18 +131,18 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 <main class="page">
 <section id="statusCard" class="card status-card" data-state="normal"><div class="status-main"><div class="eyebrow">현재 상태</div><h1 id="statusTitle" class="status-title">위치를 확인하고 있습니다</h1><div id="currentAddress" class="location-line">현재 위치 확인 중</div><div id="metaRow" class="meta-row"><span class="meta-chip blue">기상 정보를 불러오는 중입니다</span></div><div id="statusBasis" class="basis"><span>판단 근거를 계산하고 있습니다.</span></div><div class="safety-box"><h3>안전 조치 사항</h3><div id="safetyActions" class="safety-list"><div class="safety-item"><b>1</b><span>날씨 조회 후 표시됩니다.</span></div></div><div class="legal"><h4>법적·행정 기준</h4><ul id="legalBasis"></ul></div></div></div></section>
 <div class="layout"><aside class="sidebar">
-<section id="locationPanel" class="card panel"><div class="head"><div><h2>위치</h2><p>현재 위치 또는 검색한 지역의 기상정보를 표시합니다.</p></div><span id="gridBadge" class="badge">—</span></div><div id="selectedLocation" class="location-now">위치를 설정하고 있습니다.</div><div class="field"><label for="address">지역 검색</label><div class="input-row"><input id="address" placeholder="예: 군산시, 수원시"><button type="button" id="searchAddress" class="btn soft">검색</button></div><div id="addressResults" class="results"></div></div><button type="button" id="useLocation" class="btn primary" style="width:100%">현재 위치 사용</button><div class="recent-head"><strong>최근 선택 위치</strong><button type="button" id="clearRecent" class="btn small outline">전체 삭제</button></div><div id="recentLocations" class="recent"><div class="empty">최근 위치가 없습니다.</div></div></section>
-<section id="alarmSettings" class="card panel"><div class="head"><div><h2>알람 설정</h2><p>설정값 이상이면 화면 알람을 한 번 표시하고, 기준 미만으로 내려간 뒤 다시 초과할 때 재알림합니다.</p></div></div><div class="alarm-intro"><strong>알람은 무음 팝업으로 표시됩니다</strong><span>사용자 기준은 ‘기준 초과 여부’만 판단하며 공식 특보 단계와 분리합니다.</span></div>
+<section id="locationPanel" class="card panel"><div class="head"><div><h2>지역 선택</h2><p>도시명을 검색하거나 현재 위치를 사용하세요.</p></div><span id="gridBadge" class="badge">—</span></div><div id="selectedLocation" class="location-now">위치를 설정하고 있습니다.</div><div class="field"><label for="address">지역 검색</label><div class="input-row"><input id="address" placeholder="예: 군산시, 수원시"><button type="button" id="searchAddress" class="btn soft">검색</button></div><div id="addressResults" class="results"></div></div><button type="button" id="useLocation" class="btn primary" style="width:100%">현재 위치 사용</button><div class="recent-head"><strong>최근 선택 위치</strong><button type="button" id="clearRecent" class="btn small outline">전체 삭제</button></div><div id="recentLocations" class="recent"><div class="empty">최근 위치가 없습니다.</div></div></section>
+<section id="alarmSettings" class="card panel"><div class="head"><div><h2>알람</h2><p>폭염과 공식 기상특보 알림 기준을 설정합니다.</p></div></div><div class="alarm-intro"><strong>알람은 무음 팝업으로 표시됩니다</strong><span>기준 미만으로 내려간 뒤 다시 초과할 때 재알림합니다.</span></div>
 <div class="rule-card"><div class="rule-top"><div class="rule-title"><div class="rule-icon">☀</div><div><strong>폭염</strong><span>기온·체감온도 중복 선택 가능</span></div></div><label class="switch"><input id="heatEnabled" type="checkbox"><span class="slider"></span></label></div><div class="rule-body"><div class="rule-options"><div class="option-row"><label class="check-label"><input id="heatTempEnabled" type="checkbox">기온</label><div class="unit-input"><input id="heatTempThreshold" type="number" step="0.1"><span>℃</span></div></div><div class="option-row"><label class="check-label"><input id="heatAppEnabled" type="checkbox">체감온도</label><div class="unit-input"><input id="heatAppThreshold" type="number" step="0.1"><span>℃</span></div></div></div></div></div>
 <div class="rule-card"><div class="rule-top"><div class="rule-title"><div class="rule-icon">!</div><div><strong>기상특보</strong><span>기상청 공식 단계 적용</span></div></div><label class="switch"><input id="warningEnabled" type="checkbox"><span class="slider"></span></label></div><div class="rule-body"><div class="rule-options"><div class="check-grid"><label class="check-chip"><input id="warningHeat" type="checkbox">폭염</label><label class="check-chip"><input id="warningRain" type="checkbox">호우</label><label class="check-chip"><input id="warningTyphoon" type="checkbox">태풍</label></div></div></div></div>
 <div class="chart-setting"><strong>습도 차트 표시 기준</strong><p>습도 단독에는 일반적인 법정 경보 기준이 없어, 차트 색상만 사용자가 정한 값으로 표시합니다. 알람은 발생하지 않습니다.</p><div class="unit-input"><input id="humidityChartThreshold" type="number" step="1"><span>%</span></div></div>
 <div class="field" style="margin-top:13px"><label for="interval">자동 갱신 주기</label><div class="unit-input"><input id="interval" type="number" min="1" max="60" step="1"><span>분</span></div></div><div class="alarm-actions"><button type="button" id="saveSettings" class="btn primary">설정 적용</button><button type="button" id="testAlarm" class="btn dark">알람 테스트</button></div></section>
-<section id="diagnosticPanel" class="card panel"><div class="head"><div><h2>연결 상태</h2><p>실제 조회 상태를 항목별로 표시합니다.</p></div><button type="button" id="rerunHealth" class="btn small outline">다시 확인</button></div><div id="serviceGrid" class="service-grid"></div><div id="healthList" class="diag-list" style="margin-top:10px"></div></section>
+<section id="diagnosticPanel" class="card panel" hidden><div class="head"><div><h2>연결 상태</h2><p>실제 조회 상태를 항목별로 표시합니다.</p></div><button type="button" id="rerunHealth" class="btn small outline">다시 확인</button></div><div id="serviceGrid" class="service-grid"></div><div id="healthList" class="diag-list" style="margin-top:10px"></div></section>
 </aside><div class="main">
-<section id="currentWeather" class="card panel"><div class="head"><div><h2>현재 날씨</h2><p>가장 최근에 받은 관측값입니다.</p></div></div><div class="weather-grid"><div class="metric"><small>기온</small><strong><span id="temperature">—</span>℃</strong><div class="sub" id="temperatureSub">관측 대기</div></div><div class="metric"><small>체감온도</small><strong><span id="apparent">—</span>℃</strong><div class="sub">기상청·KOSHA 여름철 산식</div></div><div class="metric"><small>습도</small><strong><span id="humidity">—</span>%</strong><div class="sub" id="humiditySub">관측 대기</div></div><div class="metric"><small>1시간 강수량</small><strong><span id="rain">—</span>mm</strong><div class="sub" id="pty">강수형태 —</div></div><div class="metric"><small>풍속</small><strong><span id="wind">—</span>m/s</strong><div class="sub" id="windDir">풍향 —</div></div><div class="metric"><small>하늘 상태</small><strong id="sky" style="font-size:34px">—</strong><div class="sub">가장 가까운 예보 시각</div></div></div></section>
-<section id="forecastPanel" class="card panel"><div class="head"><div><h2>6시간 예보</h2><p>각 차트는 자기 항목의 기준만 사용합니다. 다른 항목이나 특보 때문에 색이 바뀌지 않습니다.</p></div></div><div id="forecastCharts" class="chart-grid"><div class="empty" style="grid-column:1/-1">예보를 불러오고 있습니다.</div></div><div class="legend"><span><i class="normal"></i>기준 미만</span><span><i class="danger"></i>해당 항목 기준 초과</span></div><div id="forecastNote" class="forecast-note"></div></section>
-<section id="weeklyPanel" class="card panel"><div class="head"><div><h2>이번 주 특이사항</h2><p>현재 위치의 폭염 예상과 공식 기상특보만 날짜별로 묶어 표시합니다.</p></div></div><div id="weeklyHighlights" class="weekly-grid"><div class="empty" style="grid-column:1/-1">주간 정보를 불러오고 있습니다.</div></div><div id="weeklyNote" class="forecast-note"></div></section>
-<section id="warningsPanel" class="card panel"><div class="head"><div><h2>기상특보</h2><p>현재 위치와 일치하는 폭염·호우·태풍 특보를 예비특보·주의보·경보·폭염중대경보로 구분합니다.</p></div><span id="warningCount" class="badge">0건</span></div><div id="warnings" class="warnings"><div class="empty" style="grid-column:1/-1">현재 일치하는 특보가 없습니다.</div></div></section>
+<section id="currentWeather" class="card panel"><div class="head"><div><h2>현재 날씨</h2><p>가장 최근 관측값을 한눈에 확인하세요.</p></div></div><div class="weather-hero"><div class="weather-primary"><small>현재 기온</small><div class="temperature-value"><strong><span id="temperature">—</span></strong><em>℃</em></div><span id="temperatureSub">관측 대기</span></div><div class="weather-summary"><strong id="sky">—</strong><div class="feels-like">체감온도<b><span id="apparent">—</span>℃</b></div><span class="formula-note">기상청·KOSHA 산식</span></div></div><div class="weather-mini-grid"><div class="weather-mini"><span>습도</span><strong><span id="humidity">—</span>%</strong><small id="humiditySub">관측 대기</small></div><div class="weather-mini"><span>1시간 강수</span><strong><span id="rain">—</span>mm</strong><small id="pty">강수형태 —</small></div><div class="weather-mini"><span>풍속</span><strong><span id="wind">—</span>m/s</strong><small id="windDir">풍향 —</small></div></div></section>
+<section id="forecastPanel" class="card panel"><div class="head"><div><h2>6시간 예보</h2><p>온도·습도·풍속·강수량의 변화를 확인합니다.</p></div></div><div id="forecastCharts" class="chart-grid"><div class="empty" style="grid-column:1/-1">예보를 불러오고 있습니다.</div></div><div class="legend"><span><i class="normal"></i>기준 미만</span><span><i class="danger"></i>해당 항목 기준 초과</span></div><div id="forecastNote" class="forecast-note"></div></section>
+<section id="weeklyPanel" class="card panel"><div class="head"><div><h2>이번 주 특이사항</h2><p>같은 날짜의 위험정보를 한 장에 묶어 표시합니다.</p></div></div><div id="weeklyHighlights" class="weekly-grid"><div class="empty" style="grid-column:1/-1">주간 정보를 불러오고 있습니다.</div></div><div id="weeklyNote" class="forecast-note"></div></section>
+<section id="warningsPanel" class="card panel"><div class="head"><div><h2>기상특보</h2><p>현재 지역에 적용되는 공식 특보입니다.</p></div><span id="warningCount" class="badge">0건</span></div><div id="warnings" class="warnings"><div class="empty" style="grid-column:1/-1">현재 일치하는 특보가 없습니다.</div></div></section>
 </div></div></main>
 <nav class="mobile-nav" aria-label="모바일 빠른 이동"><a href="#statusCard"><b>●</b><span>상태</span></a><a href="#currentWeather"><b>℃</b><span>날씨</span></a><a href="#locationPanel"><b>⌖</b><span>검색</span></a><a href="#forecastPanel"><b>↗</b><span>예보</span></a><a href="#warningsPanel"><b>!</b><span>특보</span></a></nav>
 <footer class="data-credit">주소 검색 데이터 © OpenStreetMap contributors</footer>
