@@ -67,7 +67,7 @@ function createApp(htmlFile='../index.html'){
   context.window=context; context.globalThis=context; context.addEventListener=()=>{};
   let scripts=[...html.matchAll(/<script(?:[^>]*)>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(x=>x.trim());
   let script=scripts.join('\n').replace(/initialize\(\);\s*$/,'');
-  script += '\nglobalThis.__app={initialize,runHealth,searchAddress,readSettings,writeSettings,applySettings,renderForecast,showAlarm,clearRecent,chartSvg,applyAndRender,matchWarnings,locationCityTokens,warningRegionTokens,regionMatchesCity,refreshSupplementary,state,store,KEYS};';
+  script += '\nglobalThis.__app={initialize,runHealth,searchAddress,readSettings,writeSettings,applySettings,renderForecast,showAlarm,processAlarms,clearRecent,chartSvg,applyAndRender,matchWarnings,locationCityTokens,warningRegionTokens,regionMatchesCity,refreshSupplementary,state,store,KEYS};';
   vm.createContext(context); vm.runInContext(script,context,{filename:`${htmlFile}-inline.js`});
   return {context,app:context.__app,elements,storage,calls,location,forecast};
 }
@@ -288,7 +288,7 @@ test('UI 31 phone visits to the root page redirect to the mobile route',()=>{
   const desktop=fs.readFileSync(require.resolve('../index.html'),'utf8');
   const mobile=fs.readFileSync(require.resolve('../mobile.html'),'utf8');
   assert.match(desktop,/matchMedia\('\(max-width: 780px\)'\)\.matches/);
-  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=7'\)/);
+  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=8'\)/);
   assert.match(desktop,/get\('desktop'\)==='1'/);
   assert.doesNotMatch(mobile,/class="desktop-link"/);
 });
@@ -310,4 +310,49 @@ test('UI 33 mobile current weather and data credit stay inside the phone width',
   assert.match(mobile,/grid-template-columns:minmax\(0,1fr\) minmax\(82px,\.78fr\)/);
   assert.match(mobile,/\.mobile-page \.data-credit\{width:100%;max-width:520px;margin:0 auto;/);
   assert.match(mobile,/text-align:center/);
+});
+
+test('UI 34 six-hour forecast threshold events never open an alarm',()=>{
+  const app=createApp();
+  app.app.state.deferAlarms=false;
+  app.app.state.activeAlarmKeys=[];
+  app.app.state.lastRaw={forecastStale:false,warningsStale:false};
+  app.elements.alarmModal.classList.remove('show');
+  app.app.processAlarms({
+    currentEvents:[],
+    forecastEvents:[{id:'temperature',scope:'forecast',forecastAt:'202608041100',criterion:'기온',value:40,threshold:33,unit:'℃',label:'기온 기준 초과'}],
+    official:[]
+  });
+  assert.equal(app.elements.alarmModal.classList.contains('show'),false);
+  assert.equal(app.app.state.activeAlarmKeys.length,0);
+});
+
+test('UI 35 current observation threshold events still open an alarm',()=>{
+  const app=createApp();
+  app.app.state.deferAlarms=false;
+  app.app.state.activeAlarmKeys=[];
+  app.app.state.lastRaw={warningsStale:false};
+  app.elements.alarmModal.classList.remove('show');
+  app.app.processAlarms({
+    currentEvents:[{id:'temperature',type:'폭염',scope:'current',criterion:'기온',value:34,threshold:33,unit:'℃',label:'기온 기준 초과'}],
+    forecastEvents:[],
+    official:[]
+  });
+  assert.equal(app.elements.alarmModal.classList.contains('show'),true);
+  assert.match(app.elements.alarmReason.textContent,/현재 값이 설정 기준 33℃ 이상/);
+});
+
+test('UI 36 active official warnings still open an alarm',()=>{
+  const app=createApp();
+  app.app.state.deferAlarms=false;
+  app.app.state.activeAlarmKeys=[];
+  app.app.state.lastRaw={warningsStale:false};
+  app.elements.alarmModal.classList.remove('show');
+  app.app.processAlarms({
+    currentEvents:[],
+    forecastEvents:[],
+    official:[{id:'warning:폭염:수원',type:'폭염',scope:'official',level:'주의보',levelRank:2,region:'수원',label:'폭염 주의보'}]
+  });
+  assert.equal(app.elements.alarmModal.classList.contains('show'),true);
+  assert.match(app.elements.alarmReason.textContent,/기상청 공식 주의보/);
 });
