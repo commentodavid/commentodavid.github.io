@@ -229,9 +229,6 @@
     } else if (currentEvents.length) {
       status = currentEvents[0].label;
       statusKind = 'warning';
-    } else if (forecastEvents.length) {
-      status = forecastEventPhrase(forecastEvents[0], nowInput);
-      statusKind = 'forecast';
     } else if (delayed) {
       status = '최신 관측 반영 지연';
       statusKind = 'delayed';
