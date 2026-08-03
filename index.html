@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>OCI 기상안전</title>
 <meta name="description" content="현재 위치와 검색 지역의 기상 위험, 6시간 예보 및 공식 기상특보를 확인합니다.">
+<script>
+(function(){
+  if(typeof window==='undefined'||!window.location||typeof window.matchMedia!=='function')return;
+  if(new URLSearchParams(window.location.search).get('desktop')==='1')return;
+  if(window.matchMedia('(max-width: 780px)').matches)window.location.replace('./mobile.html?v=4');
+})();
+</script>
 <style>
 :root{--bg:#f3f5f8;--card:#fff;--soft:#f7f9fc;--line:#e2e7ee;--text:#151b23;--muted:#697581;--blue:#2765e8;--blue-soft:#edf3ff;--green:#13805b;--green-soft:#eaf8f2;--amber:#b56a09;--amber-soft:#fff4e2;--red:#cf3f4d;--red-soft:#fff0f2;--purple:#6b55c8;--purple-soft:#f2efff;--shadow:0 14px 42px rgba(24,34,44,.07);--radius:22px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Malgun Gothic",Arial,sans-serif;letter-spacing:-.018em}button,input,select{font:inherit}button{border:0}.topbar{position:sticky;top:0;z-index:30;background:rgba(243,245,248,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(226,231,238,.92)}.top-inner{max-width:1480px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:11px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(145deg,#245edf,#75adff);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 8px 20px rgba(39,101,232,.22)}.brand strong{font-size:19px}.system{display:flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:13px;box-shadow:0 4px 12px rgba(24,34,44,.04)}.system i{width:9px;height:9px;border-radius:50%;background:#d59a2d}.system.ready i{background:var(--green)}.system.limited i{background:var(--amber)}.system.blocked i{background:var(--red)}
