@@ -48,6 +48,9 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .layout{display:flex;flex-direction:column;gap:12px}
 .mobile-page .sidebar,.mobile-page .main{display:contents}
 .mobile-page .layout,.mobile-page .panel,.mobile-page .status-main,.mobile-page .weather-grid,.mobile-page .chart-grid,.mobile-page .weekly-grid,.mobile-page .warnings{min-width:0;max-width:100%}
+.mobile-page .page>.card,.mobile-page .layout,.mobile-page .layout .card{width:100%;min-width:0;max-width:100%;margin-left:0;margin-right:0;align-self:stretch}
+.mobile-page .location-now,.mobile-page .field,.mobile-page .input-row,.mobile-page .results,.mobile-page .result,.mobile-page .recent,.mobile-page .recent button,.mobile-page .alarm-intro,.mobile-page .rule-card,.mobile-page .rule-top,.mobile-page .rule-body,.mobile-page .rule-options,.mobile-page .chart-setting,.mobile-page .chart-card,.mobile-page .weekly-card,.mobile-page .warning,.mobile-page .empty,.mobile-page .safety-box{width:100%;min-width:0;max-width:100%}
+.mobile-page .input-row>*,.mobile-page .rule-title,.mobile-page .rule-title>div,.mobile-page .chart-title,.mobile-page .chart-title>*,.mobile-page .option-row>*,.mobile-page .check-grid>*,.mobile-page .alarm-actions>*{min-width:0;max-width:100%}
 .mobile-page #currentWeather{order:1}
 .mobile-page #locationPanel{order:2}
 .mobile-page #forecastPanel{order:3}
@@ -82,7 +85,7 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .feels-like{margin-top:10px;font-size:12px;opacity:.88}
 .mobile-page .feels-like b{display:block;margin-top:2px;font-size:22px;letter-spacing:-.03em}
 .mobile-page .formula-note{display:block;margin-top:4px;font-size:9px;opacity:.7}
-.mobile-page .weather-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 12px 16px}
+.mobile-page .weather-mini-grid{width:100%;min-width:0;max-width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 12px 16px}
 .mobile-page .weather-mini{min-width:0;padding:13px 10px;border:1px solid var(--line);border-radius:15px;background:#f8fafc;text-align:center}
 .mobile-page .weather-mini>span{display:block;font-size:11px;color:var(--muted)}
 .mobile-page .weather-mini>strong{display:block;margin:8px 0 5px;font-size:20px;line-height:1.1;letter-spacing:-.04em}
@@ -92,10 +95,10 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .chart-card svg{width:100%;max-width:100%;height:190px;overflow:hidden}
 .mobile-page .chart-title strong{font-size:14px}
 .mobile-page .weekly-card,.mobile-page .warning{padding:15px;border-radius:16px}
-.mobile-page .check-grid{grid-template-columns:repeat(3,1fr)}
+.mobile-page .check-grid{width:100%;min-width:0;max-width:100%;grid-template-columns:repeat(3,minmax(0,1fr))}
 .mobile-page .check-chip{min-height:44px}
-.mobile-page .option-row{grid-template-columns:minmax(0,1fr) 108px}
-.mobile-page .alarm-actions{grid-template-columns:1fr 1fr}
+.mobile-page .option-row{width:100%;min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr) 108px}
+.mobile-page .alarm-actions{width:100%;min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .mobile-page .service-grid{grid-template-columns:1fr}
 .mobile-page .location-line,.mobile-page .location-now,.mobile-page .meta-chip,.mobile-page .basis span,.mobile-page .weekly-card span,.mobile-page .warning span,.mobile-page .diag span{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .mobile-page .modal{width:100%;max-width:100%;align-items:flex-end;padding:0;overflow-x:hidden}
