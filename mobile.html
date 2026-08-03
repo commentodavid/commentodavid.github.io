@@ -20,18 +20,19 @@
 
 /* 모바일 전용 레이아웃 */
 html{scroll-padding-top:76px}
+html,body.mobile-page{width:100%;max-width:100%;overflow-x:hidden}
 body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));background:#eef3f8}
 .mobile-page .topbar{padding-top:env(safe-area-inset-top);background:rgba(238,243,248,.94)}
-.mobile-page .top-inner{max-width:620px;padding:11px 14px}
+.mobile-page .top-inner{width:100%;max-width:620px;padding:11px 14px;gap:8px}
 .mobile-page .brand{gap:9px;min-width:0}
 .mobile-page .logo{width:38px;height:38px;border-radius:13px}
-.mobile-page .brand strong{font-size:17px;white-space:nowrap}
-.mobile-page .top-actions{display:flex;align-items:center;gap:7px;min-width:0}
+.mobile-page .brand strong{min-width:0;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-page .top-actions{display:flex;align-items:center;gap:7px;min-width:0;flex:0 0 auto}
 .mobile-page .system{padding:8px 10px;font-size:11px;min-width:0}
 .mobile-page .system span{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mobile-page .desktop-link{display:grid;place-items:center;min-width:38px;height:38px;padding:0 9px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#40505f;font-size:11px;font-weight:850;text-decoration:none}
-.mobile-page .page{width:100%;max-width:620px;padding:12px;margin:0 auto}
-.mobile-page .card{border-radius:20px;box-shadow:0 8px 28px rgba(24,34,44,.06)}
+.mobile-page .page{width:100%;max-width:620px;padding:12px;margin:0 auto;overflow-x:hidden}
+.mobile-page .card{min-width:0;max-width:100%;border-radius:20px;box-shadow:0 8px 28px rgba(24,34,44,.06)}
 .mobile-page .status-card{min-height:0;padding:20px;margin-bottom:12px}
 .mobile-page .status-card:after{width:260px;height:260px;right:-110px;bottom:-150px}
 .mobile-page .eyebrow{font-size:12px;margin-bottom:7px}
@@ -47,6 +48,7 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .legal ul{font-size:12px}
 .mobile-page .layout{display:flex;flex-direction:column;gap:12px}
 .mobile-page .sidebar,.mobile-page .main{display:contents}
+.mobile-page .layout,.mobile-page .panel,.mobile-page .status-main,.mobile-page .weather-grid,.mobile-page .chart-grid,.mobile-page .weekly-grid,.mobile-page .warnings{min-width:0;max-width:100%}
 .mobile-page #currentWeather{order:1}
 .mobile-page #locationPanel{order:2}
 .mobile-page #forecastPanel{order:3}
@@ -57,6 +59,7 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page #statusCard,.mobile-page #currentWeather,.mobile-page #locationPanel,.mobile-page #forecastPanel,.mobile-page #weeklyPanel,.mobile-page #warningsPanel,.mobile-page #alarmSettings,.mobile-page #diagnosticPanel{scroll-margin-top:76px}
 .mobile-page .panel{padding:18px}
 .mobile-page .head{margin-bottom:14px}
+.mobile-page .head>div,.mobile-page .rule-title>div{min-width:0}
 .mobile-page .head h2{font-size:18px}
 .mobile-page .head p{font-size:12px}
 .mobile-page input,.mobile-page select,.mobile-page .btn{min-height:46px}
@@ -71,8 +74,8 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .metric #sky,.mobile-page #sky{font-size:28px!important}
 .mobile-page .metric .sub{font-size:12px}
 .mobile-page .chart-grid,.mobile-page .weekly-grid,.mobile-page .warnings{grid-template-columns:1fr}
-.mobile-page .chart-card{padding:13px;border-radius:16px}
-.mobile-page .chart-card svg{height:190px}
+.mobile-page .chart-card{min-width:0;max-width:100%;padding:13px;border-radius:16px;overflow:hidden}
+.mobile-page .chart-card svg{width:100%;max-width:100%;height:190px;overflow:hidden}
 .mobile-page .chart-title strong{font-size:14px}
 .mobile-page .weekly-card,.mobile-page .warning{padding:14px}
 .mobile-page .check-grid{grid-template-columns:repeat(3,1fr)}
@@ -80,6 +83,7 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-page .option-row{grid-template-columns:minmax(0,1fr) 108px}
 .mobile-page .alarm-actions{grid-template-columns:1fr 1fr}
 .mobile-page .service-grid{grid-template-columns:1fr}
+.mobile-page .location-line,.mobile-page .location-now,.mobile-page .meta-chip,.mobile-page .basis span,.mobile-page .weekly-card span,.mobile-page .warning span,.mobile-page .diag span{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
 .mobile-page .modal{align-items:flex-end;padding:0}
 .mobile-page .modal-box{width:100%;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0}
 .mobile-page .modal-box h2{font-size:22px}
@@ -89,12 +93,14 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 .mobile-nav a{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;color:#64717c;text-decoration:none;font-size:10px;font-weight:760}
 .mobile-nav a:active,.mobile-nav a:focus{background:var(--blue-soft);color:var(--blue);outline:none}
 .mobile-nav b{font-size:17px;line-height:1}
+@media(max-width:420px){
+  .mobile-page .system span{display:none}
+  .mobile-page .system{min-width:32px;justify-content:center}
+}
 @media(max-width:360px){
   .mobile-page .page{padding:9px}
   .mobile-page .panel,.mobile-page .status-card{padding:16px}
   .mobile-page .brand strong{font-size:15px}
-  .mobile-page .system span{display:none}
-  .mobile-page .system{min-width:32px;justify-content:center}
   .mobile-page .status-title{font-size:26px}
   .mobile-page .metric{padding:13px}
   .mobile-page .metric strong{font-size:27px}
@@ -601,4 +607,3 @@ $('searchAddress').onclick=searchAddress;$('address').addEventListener('keydown'
 </script>
 </body>
 </html>
-
