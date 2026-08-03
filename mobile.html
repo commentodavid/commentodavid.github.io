@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#2765e8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>OCI 기상안전 모바일</title>
 <meta name="description" content="모바일에서 현재 위치와 검색 지역의 기상 위험, 6시간 예보 및 공식 기상특보를 확인합니다.">
 <style>
@@ -127,7 +128,7 @@ body.mobile-page{padding-bottom:calc(76px + env(safe-area-inset-bottom));backgro
 </style>
 </head>
 <body class="mobile-page">
-<header class="topbar"><div class="top-inner"><div class="brand"><div class="logo">W</div><strong>OCI 기상안전</strong></div><div class="top-actions"><div id="system" class="system"><i></i><span id="systemText">연결 확인 중</span></div><a class="desktop-link" href="./" aria-label="PC 화면으로 이동">PC</a></div></div></header>
+<header class="topbar"><div class="top-inner"><div class="brand"><div class="logo">W</div><strong>OCI 기상안전</strong></div><div class="top-actions"><div id="system" class="system"><i></i><span id="systemText">연결 확인 중</span></div><a class="desktop-link" href="./?desktop=1" aria-label="PC 화면으로 이동">PC</a></div></div></header>
 <main class="page">
 <section id="statusCard" class="card status-card" data-state="normal"><div class="status-main"><div class="eyebrow">현재 상태</div><h1 id="statusTitle" class="status-title">위치를 확인하고 있습니다</h1><div id="currentAddress" class="location-line">현재 위치 확인 중</div><div id="metaRow" class="meta-row"><span class="meta-chip blue">기상 정보를 불러오는 중입니다</span></div><div id="statusBasis" class="basis"><span>판단 근거를 계산하고 있습니다.</span></div><div class="safety-box"><h3>안전 조치 사항</h3><div id="safetyActions" class="safety-list"><div class="safety-item"><b>1</b><span>날씨 조회 후 표시됩니다.</span></div></div><div class="legal"><h4>법적·행정 기준</h4><ul id="legalBasis"></ul></div></div></div></section>
 <div class="layout"><aside class="sidebar">
