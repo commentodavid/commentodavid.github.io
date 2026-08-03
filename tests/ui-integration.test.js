@@ -288,7 +288,7 @@ test('UI 31 phone visits to the root page redirect to the mobile route',()=>{
   const desktop=fs.readFileSync(require.resolve('../index.html'),'utf8');
   const mobile=fs.readFileSync(require.resolve('../mobile.html'),'utf8');
   assert.match(desktop,/matchMedia\('\(max-width: 780px\)'\)\.matches/);
-  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=8'\)/);
+  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=9'\)/);
   assert.match(desktop,/get\('desktop'\)==='1'/);
   assert.doesNotMatch(mobile,/class="desktop-link"/);
 });
@@ -355,4 +355,19 @@ test('UI 36 active official warnings still open an alarm',()=>{
   });
   assert.equal(app.elements.alarmModal.classList.contains('show'),true);
   assert.match(app.elements.alarmReason.textContent,/기상청 공식 주의보/);
+});
+
+test('UI 37 current status never uses a future forecast time',()=>{
+  const app=createApp();
+  app.app.state.lastRaw={
+    checkedAt:'2026-08-04T08:32:00+09:00',gridKey:'55,92',
+    weather:{observedAt:'202608040800',temperatureC:29.6,humidityPct:86,rain1hMm:0,precipitationType:'없음',windDirectionDeg:180,windSpeedMs:1.3,isDelayed:false,isStale:false},
+    forecast:[{forecastAt:'209908041000',temperatureC:35,humidityPct:86,rain1hMm:0,windSpeedMs:1.3,sky:'맑음'}],forecastStale:false,forecastError:null,
+    warnings:[],warningsStale:false,warningError:null
+  };
+  app.app.applyAndRender({alarms:false});
+  assert.equal(app.elements.statusTitle.textContent,'현재 기준 초과 없음');
+  assert.doesNotMatch(app.elements.statusTitle.textContent,/10:00|예보/);
+  assert.match(app.elements.statusBasis.innerHTML,/현재 관측 기준 초과 없음/);
+  assert.doesNotMatch(app.elements.statusBasis.innerHTML,/10:00|예보/);
 });
