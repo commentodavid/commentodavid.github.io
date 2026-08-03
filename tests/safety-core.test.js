@@ -117,7 +117,10 @@ test('81 assessment stale blocks current', () => {
 test('82 assessment official warning', () => assert.equal(Core.buildAssessment({ weather: basePoint, warnings: [{ type: '폭염', command: '1', levelCode: '3' }] }, defaults).statusKind, 'danger'));
 test('83 assessment official advisory', () => assert.equal(Core.buildAssessment({ weather: basePoint, warnings: [{ type: '호우', command: '1', levelCode: '2' }] }, defaults).statusKind, 'warning'));
 test('84 assessment current threshold', () => assert.equal(Core.buildAssessment({ weather: { ...basePoint, windSpeedMs: 20 } }, defaults).status, '풍속 기준 초과'));
-test('85 assessment forecast threshold', () => assert.match(Core.buildAssessment({ weather: basePoint, forecast: [{ ...basePoint, rain1hMm: 20 }] }, defaults, Date.parse('2026-08-02T11:30:00+09:00')).status, /12:00 예보에서/));
+test('85 forecast threshold stays out of current status', () => {
+  const a=Core.buildAssessment({ weather: basePoint, forecast: [{ ...basePoint, rain1hMm: 20 }] }, defaults, Date.parse('2026-08-02T11:30:00+09:00'));
+  assert.equal(a.status,'현재 기준 초과 없음'); assert.equal(a.statusKind,'normal'); assert.ok(a.forecastEvents.length>0);
+});
 test('86 assessment missing data safe', () => assert.equal(Core.buildAssessment(null, defaults).statusKind, 'normal'));
 
 test('87 safety guidance default', () => assert.equal(Core.buildSafetyGuidance({ current: { apparent: 25 }, currentEvents: [], official: [] }).actions.length, 2));
