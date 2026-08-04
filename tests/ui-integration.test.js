@@ -67,7 +67,7 @@ function createApp(htmlFile='../index.html'){
   context.window=context; context.globalThis=context; context.addEventListener=()=>{};
   let scripts=[...html.matchAll(/<script(?:[^>]*)>([\s\S]*?)<\/script>/g)].map(m=>m[1]).filter(x=>x.trim());
   let script=scripts.join('\n').replace(/initialize\(\);\s*$/,'');
-  script += '\nglobalThis.__app={initialize,runHealth,searchAddress,readSettings,writeSettings,applySettings,renderForecast,showAlarm,processAlarms,clearRecent,chartSvg,applyAndRender,matchWarnings,locationCityTokens,warningRegionTokens,regionMatchesCity,refreshSupplementary,state,store,KEYS};';
+  script += '\nglobalThis.__app={initialize,runHealth,searchAddress,useCurrentLocation,readSettings,writeSettings,applySettings,renderForecast,showAlarm,processAlarms,clearRecent,chartSvg,applyAndRender,matchWarnings,locationCityTokens,warningRegionTokens,regionMatchesCity,refreshSupplementary,state,store,KEYS,DEFAULT_LOCATION};';
   vm.createContext(context); vm.runInContext(script,context,{filename:`${htmlFile}-inline.js`});
   return {context,app:context.__app,elements,storage,calls,location,forecast};
 }
@@ -77,10 +77,10 @@ async function settle(predicate, attempts=40){
 }
 
 let fixture;
-test('UI 01 initializes current location fallback and current weather', async()=>{
+test('UI 01 initializes OCI Gunsan factory as the default location and current weather', async()=>{
   fixture=createApp(); await fixture.app.initialize();
   await settle(()=>fixture.app.state.services.weekly!=='wait');
-  assert.equal(fixture.elements.currentAddress.textContent,'전북특별자치도 군산시');
+  assert.equal(fixture.elements.currentAddress.textContent,'OCI 군산공장, 군산시, 전북특별자치도, 대한민국');
   assert.equal(fixture.elements.temperature.textContent,'31.0');
   assert.equal(fixture.elements.humidity.textContent,'75');
 });
@@ -288,7 +288,7 @@ test('UI 31 phone visits to the root page redirect to the mobile route',()=>{
   const desktop=fs.readFileSync(require.resolve('../index.html'),'utf8');
   const mobile=fs.readFileSync(require.resolve('../mobile.html'),'utf8');
   assert.match(desktop,/matchMedia\('\(max-width: 780px\)'\)\.matches/);
-  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=9'\)/);
+  assert.match(desktop,/location\.replace\('\.\/mobile\.html\?v=10'\)/);
   assert.match(desktop,/get\('desktop'\)==='1'/);
   assert.doesNotMatch(mobile,/class="desktop-link"/);
 });
@@ -370,4 +370,26 @@ test('UI 37 current status never uses a future forecast time',()=>{
   assert.doesNotMatch(app.elements.statusTitle.textContent,/10:00|예보/);
   assert.match(app.elements.statusBasis.innerHTML,/현재 관측 기준 초과 없음/);
   assert.doesNotMatch(app.elements.statusBasis.innerHTML,/10:00|예보/);
+});
+
+test('UI 38 startup never replaces OCI Gunsan with automatic browser geolocation',async()=>{
+  const app=createApp();
+  let geolocationRequests=0;
+  app.context.navigator.geolocation.getCurrentPosition=()=>{geolocationRequests++;};
+  await app.app.initialize();
+  await settle(()=>app.app.state.services.weekly!=='wait');
+  assert.equal(geolocationRequests,0);
+  assert.equal(app.elements.currentAddress.textContent,'OCI 군산공장, 군산시, 전북특별자치도, 대한민국');
+  assert.equal(app.calls.some(x=>x.startsWith('/api/reverse')),false);
+  assert.equal(app.app.DEFAULT_LOCATION.lat,35.9677);
+  assert.equal(app.app.DEFAULT_LOCATION.lon,126.7366);
+});
+
+test('UI 39 low-accuracy browser location cannot replace the selected location',async()=>{
+  const app=createApp();
+  app.app.state.location={...app.app.DEFAULT_LOCATION};
+  app.context.navigator.geolocation.getCurrentPosition=ok=>ok({coords:{latitude:37.4563,longitude:126.7052,accuracy:25000}});
+  await assert.rejects(app.app.useCurrentLocation(false),/위치 정확도가 낮아/);
+  assert.equal(app.app.state.location.displayName,'OCI 군산공장, 군산시, 전북특별자치도, 대한민국');
+  assert.equal(app.calls.some(x=>x.startsWith('/api/reverse')),false);
 });
